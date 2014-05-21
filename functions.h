@@ -1354,6 +1354,27 @@ public:
         E2 = EReg2;
 
       }
+      else if (method==61)
+      {
+        // Method 61, similar to 6, is not to recalib but to determine the energy scale at the electron level,
+        //  i.e. not at the cell level.
+        // In addtion, Method 61 is desiged for mode 781, that only if _UseEle1 or 2 happens, you use the EReg1 or 2, 
+        //   otherwise, use E1 or E2. And EReg1/2 store the original Regression Energy, but E1 E2 store the Regression
+        //   Energy times the previously fitted Eta-Scales.
+
+        // regression energy
+        double EReg1 = *(_EReg1.at(i));
+        double EReg2 = *(_EReg2.at(i));
+
+        // apply energy scale
+        if (_UseEle1.at(i)) EReg1 *= par.at(0);
+        if (_UseEle2.at(i)) EReg2 *= par.at(0);
+
+        // energy after energy scale
+        if (_UseEle1.at(i)) E1 = EReg1;
+        if (_UseEle2.at(i)) E2 = EReg2;
+
+      }
       else if (method==7)
       {
         // Method 7 is not to recalib, but to determine the energy scale at the electron level,

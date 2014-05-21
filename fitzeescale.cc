@@ -60,6 +60,8 @@ bool fitscale = true;
 // even or odd events
 int doEvenOdd = 0; // 0 for not to split, 1 for odd, 2 for even
 
+// iteration times in the fit, in case it is needed, e.g. in mode==781
+int Iteration_Times = 2;
 
 int main(int argc, char* argv[])
 {
@@ -1015,8 +1017,299 @@ int main(int argc, char* argv[])
 
     hist->Write();
   } // mode==78 79
+  else if (mode==781)
+  {
+    // mode 781 is based on mode 78 (see below), but do the complex method below:
+    // 1.) read only 10k events and do a first round of fit
+    // 2.) read in all the events, but do the fit for each eta-ring, one by one with the others fixed at its previous fitted value.
+    // 3.) iterate a second time.
+    // 4.) iterate a third time. using a Iteration_Times to control the number of iterations. 
 
+    //  ps:
+    //    mode 78 is similar to mode 71, 74, and 76, but 78 has strictly defined eta ring 80*2 eta-rings in EB and 39*2 eta-rings in EE
+    //    mode 79 same as mode 78, just with a Etascale applied in advance
+     
+    if (debug>0) std::cout << " Step 2: do fit mode==781 " << std::endl;
+
+    // initialize the eta ring table for mode 781
+    initEEEtaRingTable();
+
+    // Eta bins
+    std::vector<EtaRingEnergyScale> EtaScale;
+
+    // 39 EE- bins
+    for (int ibin=-39; ibin<=-1; ibin++)
+    {
+      EtaRingEnergyScale Ascale = {-85+ibin, 1.0, 0.001};
+      EtaScale.push_back(Ascale);
+    }
+    // 85 EB- bins
+    for (int ibin=-85; ibin<=-1; ibin++)
+    {
+      EtaRingEnergyScale Ascale = {ibin, 1.0, 0.001};
+      EtaScale.push_back(Ascale);
+    }
+    // 85 EB+ bins
+    for (int ibin=1; ibin<=85; ibin++)
+    {
+      EtaRingEnergyScale Ascale = {ibin, 1.0, 0.001};
+      EtaScale.push_back(Ascale);
+    }
+    // 39 EE+ bins
+    for (int ibin=1; ibin<=39; ibin++)
+    {
+      EtaRingEnergyScale Ascale = {85+ibin, 1.0, 0.001};
+      EtaScale.push_back(Ascale);
+    }
     
+    // give Eta bins to all events;
+    nEvents = AddEtaBinNumberToAllEvents(EtaScale);
+
+    //////////////////////// 
+    //  Step 2.1.) do a fit using at most 10k events, to fit all the Eta-Rings in one step.
+    //
+    //
+    if (debug>0) std::cout << "Step 2.1.) do a fit using at most 10k events, to fit all the Eta-Rings in one step." << std::endl;
+
+    // give eta-bin numbers for 10k events
+    nEvents = AddEtaBinNumberToElectrons(EtaScale, _combine, 10000);
+
+    // define the signal fraction
+    nSignals = int(signalFraction*(double)nEvents);
+
+    if (debug>0) std::cout << " Step 2.1: init data and pars : nEvents = " << nEvents << std::endl;
+
+    // initialize fcn using this set of events
+    fcn.initDataScale(nEvents, nSignals,
+                   E1, EReg1, Eta1, Phi1, ScaleBin1,
+                   E2, EReg2, Eta2, Phi2, ScaleBin2,
+                   debug, method);
+
+    // initialize PDF
+    fcn.initBWGSParameters(_FitWindowHigh, // windowHigh
+                             _FitWindowLow, // windowLow
+                             _Zmass, //voigtMass
+                             gaus_reso, //voightResolution
+                             2.4952, //voigtWidth
+                             nSignals,
+                             nEvents);
+
+    // also define MnUserParameters
+    MnUserParameters Apars;
+
+    char name[100];
+    for (int ibin=0; ibin<(int)EtaScale.size(); ibin++)
+    {
+      sprintf(name, "par_EtaRing%d", EtaScale.at(ibin).EtaRing);
+      Apars.Add(name, 1.0, 0.0001); //  calibC
+    }
+
+    if (debug>0) std::cout << " Step 2.1: define migrad " << std::endl;
+    // define migrad
+    MnMigrad migrad(fcn, Apars);
+
+    if (debug>0) std::cout << " Step 2.1: do fit " << std::endl;
+    // minimize
+    FunctionMinimum min = migrad();
+
+    // print min
+    std::cout << "minimum of E-scale of EtaBin : \n"
+    << min << std::endl;
+
+    //if (debug>0) std::cout << " Step 2.1: hesse estimation of uncertainties " << std::endl;
+    // hesse
+    //MnHesse hesse;
+    //hesse(fcn, min);
+
+    if (debug>0) std::cout << " Step 2.1: get parameters " << std::endl;
+    // get parmeters
+    Apars = min.UserParameters();
+
+    // get back the fitted parameters to EtaScale;
+    for (int ibin=0; ibin<(int)EtaScale.size(); ibin++)
+    {
+      EtaScale.at(ibin).s = Apars.Value(ibin);
+      EtaScale.at(ibin).serr = Apars.Error(ibin);
+    }
+
+    //////////////
+    // Step 2.2) read in all the events, but do the fit for each eta-ring, one by
+    //      one with the others fixed at its previous fitted value.
+    //      And do this for several iterations. 
+    //
+    std::cout << "   Step 2.2) read in all the events, but do the fit for each eta-ring, one by" << std::endl;
+    std::cout << "        one with the others fixed at its previous fitted value." << std::endl;
+    std::cout << "        And do this for several iterations. " << std::endl;
+    ///
+
+    // iterations
+    for (int iIter=0; iIter<Iteration_Times; iIter++) 
+    {
+
+      std::cout << "   Step 2.2: in Iteration " << iIter << std::endl;
+
+      // loop over all EtaScale bins
+      for (int ibin=0; ibin<(int)EtaScale.size(); ibin++)
+      {
+        if (debug>0) std::cout << " Step 2.2, iIter " << iIter << ", ibin " << ibin << ": select events in this EtaScale bin" << std::endl;
+        // select events in this EtaScale bin
+        nEvents = SelectEventsInOneScaleBin(ibin, _combine);
+
+        if (debug>0) std::cout << " Step 2.2, iIter " << iIter << ", ibin " << ibin << ": define the signal fraction " << std::endl;
+        // define the signal fraction
+        nSignals = int(signalFraction*(double)nEvents);
+     
+        if (debug>0) std::cout << " Step 2.2, iIter " << iIter << ", ibin " << ibin << ": apply previously fitted EtaScale to selected events." << std::endl;
+        // apply previously fitted EtaScale to selected events.
+        ApplyEtaRingEtaScaleToSelectedEvents(EtaScale);
+
+        if (debug>0) std::cout << " Step 2.2, iIter " << iIter << ", ibin " << ibin << ": define migrad " << std::endl;
+
+        // initialize fcn using this set of events
+        fcn.initDataScale(nEvents, nSignals,
+                       E1, EReg1, Eta1, Phi1, ScaleBin1,
+                       E2, EReg2, Eta2, Phi2, ScaleBin2,
+                       debug, 61);
+
+        // initialize PDF
+        fcn.initBWGSParameters(_FitWindowHigh, // windowHigh
+                               _FitWindowLow, // windowLow
+                               _Zmass, //voigtMass
+                               gaus_reso, //voightResolution
+                               2.4952, //voigtWidth
+                               nSignals,
+                               nEvents);
+
+        // also define MnUserParameters
+        MnUserParameters AonePar;
+        sprintf(name, "par_EtaRing%d", EtaScale.at(ibin).EtaRing);
+        AonePar.Add(name, 1.0, 0.0001); //  calibC       
+    
+        if (debug>0) std::cout << " Step 2.2, iIter " << iIter << ", ibin " << ibin << ": define migrad " << std::endl;
+        // define migrad
+        MnMigrad migrad(fcn, AonePar);
+
+        if (debug>0) std::cout << " Step 2.2, iIter " << iIter << ", ibin " << ibin << ": do fit " << std::endl;
+        // minimize
+        FunctionMinimum amin = migrad();
+
+        // print min
+        std::cout << "minimum of E-scale of EtaBin : \n"
+                   << amin << std::endl;
+
+
+        if (debug>0) std::cout << " Step 2.2, iIter " << iIter << ", ibin " << ibin << ": get parameters " << std::endl;
+        // get parmeters
+        AonePar = amin.UserParameters();  
+        
+        // give values to Apars
+        Apars.SetValue(ibin, AonePar.Value(0));  
+        Apars.SetError(ibin, AonePar.Error(0));  
+
+      }
+
+      // update the EtaScale using Apars.
+      for (int ibin=0; ibin<(int)EtaScale.size(); ibin++)
+      {
+        EtaScale.at(ibin).s = Apars.Value(ibin);
+        EtaScale.at(ibin).serr = Apars.Error(ibin);
+      }
+      
+    } // iteration
+
+////////
+
+    //////////////////////////
+    //
+    //  Step 2.3) reinitialize everthing to check the results
+    //
+
+    // pass the "Apars" to "scales"
+    scales = Apars;
+
+    if (debug>0) std::cout << "Step 2.3.) reinitialize the data and check the results" << std::endl;
+
+    // give eta-bin numbers to events
+    nEvents = AddEtaBinNumberToElectrons(EtaScale, _combine);
+
+    // define the signal fraction
+    nSignals = int(signalFraction*(double)nEvents);
+
+    if (debug>0) std::cout << " Step 2.3: init data and pars : nEvents = " << nEvents << std::endl;
+
+    // initialize fcn using this set of events
+    fcn.initDataScale(nEvents, nSignals,
+                   E1, EReg1, Eta1, Phi1, ScaleBin1,
+                   E2, EReg2, Eta2, Phi2, ScaleBin2,
+                   debug, method);
+
+    // initialize PDF
+    fcn.initBWGSParameters(_FitWindowHigh, // windowHigh
+                             _FitWindowLow, // windowLow
+                             _Zmass, //voigtMass
+                             gaus_reso, //voightResolution
+                             2.4952, //voigtWidth
+                             nSignals,
+                             nEvents);
+
+    //
+    if (debug>0)
+    {
+      // print scan parameter
+      // plot
+      MnPlot plot;
+      // scan parameters
+      MnParameterScan parscan(fcn, Apars);
+      for (int ip=0; ip<(int)Apars.Params().size(); ip++)
+      {
+        if (fabs(Apars.Value(ip))<3&&fabs(Apars.Error(ip))<1.0)
+        {
+          std::cout << "Scan of Parameter " << Apars.GetName(ip) << " : " << std::endl;
+          std::vector< std::pair<double, double> > points_scan = parscan(ip);
+          plot(points_scan);
+        }
+        else
+        {
+          std::cout << "Scan of Parameter " << Apars.GetName(ip) << " : Not pass result quality check.. " << std::endl;
+        }
+      }
+    }
+
+
+    std::cout << "Fitting Results: " << std::endl;
+    for (int ibin=0; ibin<(int)EtaScale.size(); ibin++)
+    {
+      std::cout << "EtaBin[" << ibin << "] (" << EtaScale.at(ibin).EtaRing << ") : "
+         << Apars.Value(ibin) << " +/- " << Apars.Error(ibin) << std::endl;
+    }
+
+    fout->cd();
+
+    double histBins[1000];
+    for (int ibin=0; ibin<(int)EtaScale.size(); ibin++)
+    {
+      histBins[ibin] = EtaScale.at(ibin).EtaRing-0.5;
+      if (ibin==(int)EtaScale.size()-1)
+      {
+        histBins[ibin+1] = EtaScale.at(ibin).EtaRing+0.5;
+      }
+    }
+
+
+    TH1D* hist = new TH1D("hEtaScale", "hEtaScale", (int)EtaScale.size(), histBins);
+    hist->Sumw2();
+    hist->SetMarkerStyle(20);
+
+    for (int ibin=0; ibin<(int)Apars.Params().size(); ibin++)
+    {
+      hist->SetBinContent(ibin+1, Apars.Value(ibin));
+      hist->SetBinError(ibin+1, Apars.Error(ibin));
+    }
+
+    hist->Write();
+  } // mode==781
+
+/////////  
   // close fout
   fout->Close();
 

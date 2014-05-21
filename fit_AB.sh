@@ -1,8 +1,8 @@
 #!/bin/sh
 
-MODE=78
-ROOTFILEIN=ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012AB_10k.root
-ROOTFILEOUT=fitzeescale_out_AB.root
+MODE=781
+ROOTFILEIN=root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/heli/ntuple/ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012AB_10k.root
+ROOTFILEOUT=fitzeescale_out_AB_10ktest.root
 METHOD=7
 GAUSRESO=1.5;
 REGVERSION=V8Elec

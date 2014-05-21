@@ -78,6 +78,7 @@ std::vector<Int_t> allRunNum;
 std::vector<ULong64_t> allEvtNum; 
 std::vector<double> allE1, allEReg1, allEta1, allPhi1;
 std::vector<double> allE2, allEReg2, allEta2, allPhi2;
+std::vector<double> allSCEta1, allSCEta2;
 std::vector<int> allnHits1, allnHits2;
 std::vector< std::vector<double> > allHitE1, allHitE2;
 std::vector< std::vector<int> > allHitIX1, allHitIY1, allHitIZ1;
@@ -85,6 +86,7 @@ std::vector< std::vector<int> > allHitIX2, allHitIY2, allHitIZ2;
 std::vector<int> allSeedIX1, allSeedIY1, allSeedIZ1;
 std::vector<int> allSeedIX2, allSeedIY2, allSeedIZ2;
 std::vector<double> allRawEEcal1, allRawEEcal2;
+std::vector<int> allScaleBin1, allScaleBin2;
 
 // store selected events
 int nEvents, nSignals;
@@ -404,6 +406,7 @@ void FillAllEvents(TChain* tree, TChain* extree, const int debug=0, const std::s
     else allEReg1.push_back(energySCEle_regrCorrSemiParV8_ele[0]);    
     allEta1.push_back(etaEle[0]);
     allPhi1.push_back(phiEle[0]);
+    allSCEta1.push_back(etaSCEle[0]);
     allRawEEcal1.push_back(rawEnergySCEle[0]-esEnergySCEle[0]);
     allSeedIX1.push_back(seedXSCEle[0]);
     allSeedIY1.push_back(seedYSCEle[0]);
@@ -438,6 +441,7 @@ void FillAllEvents(TChain* tree, TChain* extree, const int debug=0, const std::s
     else allEReg2.push_back(energySCEle_regrCorrSemiParV8_ele[1]);
     allEta2.push_back(etaEle[1]);
     allPhi2.push_back(phiEle[1]);
+    allSCEta2.push_back(etaSCEle[1]);
     allRawEEcal2.push_back(rawEnergySCEle[1]-esEnergySCEle[1]);
     allSeedIX2.push_back(seedXSCEle[1]);
     allSeedIY2.push_back(seedYSCEle[1]);
@@ -1169,6 +1173,85 @@ int SelectEventsInOneCellWith3x3Others(int ix, int iy, int iz,
 }
 //
 
+int SelectEventsInOneScaleBin(int scale_bin, std::string Combine="")
+{
+  // clear previous vectors
+  nEvents = 0;
+  nSignals = 0;
+  E1.clear();
+  EReg1.clear();
+  Eta1.clear();
+  ScaleBin1.clear();
+  UseEle1.clear();
+  Phi1.clear();
+  E2.clear();
+  EReg2.clear();
+  Eta2.clear();
+  Phi2.clear();
+  ScaleBin2.clear();
+  UseEle2.clear();
+
+  // loop over all events and select events
+  for (int i=0; i<nEventsAll; i++)
+  {
+    // EB or EE combinatioin check
+    if ( Combine=="EBEB" ) // both in EB
+    {
+      if ( !(fabs(allSCEta1[i])<1.49&&fabs(allSCEta2[i])<1.49) ) continue;
+    }
+    if ( Combine=="EBEE" ) // one in EB one in EE
+    {
+      if ( !( (fabs(allSCEta1[i])<1.49&&fabs(allSCEta2[i])>1.49)||(fabs(allSCEta2[i])<1.49&&fabs(allSCEta1[i])>1.49) ) ) continue;
+    }
+    if ( Combine=="EEEE" ) // both in EE
+    {
+      if ( !(fabs(allSCEta1[i])>1.49&&fabs(allSCEta2[i])>1.49) ) continue;
+    }
+    if ( Combine=="EE" ) // any one of the two in EE
+    {
+      if ( !(fabs(allSCEta1[i])>1.49||fabs(allSCEta2[i])>1.49) ) continue;
+    }
+    if ( Combine=="EB" ) // any one of the two in EB
+    {
+      if ( !(fabs(allSCEta1[i])<1.49||fabs(allSCEta2[i])<1.49) ) continue;
+    }
+    // note, if not any of the string above, this event will always pass this check.
+
+    // check which electron in this eta-ring
+    bool takeEle1(false), takeEle2(false);
+    if (allScaleBin1.at(i)==scale_bin) takeEle1 = true;
+    else takeEle1 = false;
+    if (allScaleBin2.at(i)==scale_bin) takeEle2 = true;
+    else takeEle2 = false;
+
+    // continue if do not take any one
+    if ( (!takeEle1) && (!takeEle2) ) continue;
+
+    // if not continue above, it is a useful event to use
+    E1.push_back(&(allE1.at(i)));
+    EReg1.push_back(&(allEReg1.at(i)));
+    Eta1.push_back(&(allEta1.at(i)));
+    Phi1.push_back(&(allPhi1.at(i)));
+    ScaleBin1.push_back(allScaleBin1.at(i));
+    UseEle1.push_back(takeEle1);
+    E2.push_back(&(allE2.at(i)));
+    EReg2.push_back(&(allEReg2.at(i)));
+    Eta2.push_back(&(allEta2.at(i)));
+    Phi2.push_back(&(allPhi2.at(i)));
+    ScaleBin2.push_back(allScaleBin2.at(i));
+    UseEle2.push_back(takeEle2);
+
+  }
+
+  // nEvents
+  nEvents = (int)E1.size();
+  nSignals = nEvents; // assume no background (fix me)
+
+  return nEvents;
+
+
+}
+
 // select events in one Eta bin
 int SelectEventsInOneEtaBin(double bin_min, double bin_max, std::string Combine="")
 {
@@ -1244,8 +1327,45 @@ int SelectEventsInOneEtaBin(double bin_min, double bin_max, std::string Combine=
 
 }
 
+//////////
+int AddEtaBinNumberToAllEvents(const std::vector<EtaRingEnergyScale>& EtaScale)
+{
+  // clear energy scale binning number vectors
+  allScaleBin1.clear();
+  allScaleBin2.clear();
+
+  // loop over all events and select events
+  for (int i=0; i<nEventsAll; i++)
+  {
+    // findout which bins it belongs to
+    int bin1(-1), bin2(-1);
+    for (int ibin=0; ibin<(int)EtaScale.size(); ibin++)
+    {
+      if (GetEtaRing(allSeedIX1.at(i), allSeedIY1.at(i), allSeedIZ1.at(i))==EtaScale.at(ibin).EtaRing) bin1 = ibin;
+      if (GetEtaRing(allSeedIX2.at(i), allSeedIY2.at(i), allSeedIZ2.at(i))==EtaScale.at(ibin).EtaRing) bin2 = ibin;
+    }
+
+    // give bin number, -1 means no e-scale is going to be applied.
+    allScaleBin1.push_back(bin1);
+    allScaleBin2.push_back(bin2);
+
+    // check the allScaleBin1 entries are one-to-one matched with other allXX vectors.
+    if ( (int)allScaleBin1.size()!=(i+1) || (int)allScaleBin2.size()!=(i+1) ) 
+    {
+       std::cout << "ERROR:: AddEtaBinNumberToAllEvents:: fail to add one-to-one matched ScaleBin numbers. " << std::endl;
+       abort();
+    }
+  }
+
+  // nEvents
+  return nEventsAll;
+
+}
+
+
+
 /////////////////
-int AddEtaBinNumberToElectrons(const std::vector<EtaRingEnergyScale>& EtaScale, const std::string Combine="")
+int AddEtaBinNumberToElectrons(const std::vector<EtaRingEnergyScale>& EtaScale, const std::string Combine="", const int nevents_max=-1 )
 {
   // clear previous vectors
   nEvents = 0;
@@ -1270,23 +1390,23 @@ int AddEtaBinNumberToElectrons(const std::vector<EtaRingEnergyScale>& EtaScale, 
     // EB or EE combinatioin check
     if ( Combine=="EBEB" ) // both in EB
     {
-      if ( !(fabs(allEta1[i])<1.48&&fabs(allEta2[i])<1.48) ) continue;
+      if ( !(fabs(allSCEta1[i])<1.49&&fabs(allSCEta2[i])<1.49) ) continue;
     }
     if ( Combine=="EBEE" ) // one in EB one in EE
     {
-      if ( !( (fabs(allEta1[i])<1.48&&fabs(allEta2[i])>1.48)||(fabs(allEta2[i])<1.48&&fabs(allEta1[i])>1.48) ) ) continue;
+      if ( !( (fabs(allSCEta1[i])<1.49&&fabs(allSCEta2[i])>1.49)||(fabs(allSCEta2[i])<1.49&&fabs(allSCEta1[i])>1.49) ) ) continue;
     }
     if ( Combine=="EEEE" ) // both in EE
     {
-      if ( !(fabs(allEta1[i])>1.48&&fabs(allEta2[i])>1.48) ) continue;
+      if ( !(fabs(allSCEta1[i])>1.49&&fabs(allSCEta2[i])>1.49) ) continue;
     }
     if ( Combine=="EE" ) // any one of the two in EE
     {
-      if ( !(fabs(allEta1[i])>1.48||fabs(allEta2[i])>1.48) ) continue;
+      if ( !(fabs(allSCEta1[i])>1.49||fabs(allSCEta2[i])>1.49) ) continue;
     }
     if ( Combine=="EB" ) // any one of the two in EB
     {
-      if ( !(fabs(allEta1[i])<1.48||fabs(allEta2[i])<1.48) ) continue;
+      if ( !(fabs(allSCEta1[i])<1.49||fabs(allSCEta2[i])<1.49) ) continue;
     }
     // note, if not any of the string above, this event will always pass this check.
 
@@ -1314,6 +1434,10 @@ int AddEtaBinNumberToElectrons(const std::vector<EtaRingEnergyScale>& EtaScale, 
     EReg2.push_back(&(allEReg2.at(i)));
     Eta2.push_back(&(allEta2.at(i)));
     Phi2.push_back(&(allPhi2.at(i)));
+
+    // break if reached the maximum needed events
+    if ( (nevents_max!=-1)&&((int)E1.size()>=nevents_max) ) break; 
+
   }
 
   // nEvents
@@ -1527,8 +1651,8 @@ void ApplyEtaScaleToAllEvents(const std::vector<EnergyScale>& EtaScale)
     }
 
     // apply eta scale
-    if (bin1>=0) allEReg1.at(i) *= EtaScale.at(bin1).s;
-    if (bin2>=0) allEReg2.at(i) *= EtaScale.at(bin2).s;
+    if (ScaleBin1.at(i)>=0) allEReg1.at(i) *= EtaScale.at(ScaleBin1.at(i)).s;
+    if (ScaleBin2.at(i)>=0) allEReg2.at(i) *= EtaScale.at(ScaleBin2.at(i)).s;
 
   }
 
@@ -1643,6 +1767,32 @@ void ApplyEtaRingEtaScaleToAllEventsABCD(const std::vector<EtaRingEnergyScale>& 
         << std::endl;
 }
 //////////////////
+
+void ApplyEtaRingEtaScaleToSelectedEvents(const std::vector<EtaRingEnergyScale>& EtaScale)
+{
+  // this function modifies the E1 and E2 vectors to use them store the (REgression Energy * Eta Scale).
+  // check if there are selected events
+  int nevents = (int)E1.size();
+  if (nevents<=0) 
+  {
+    std::cout << "ApplyEtaRingEtaScaleToSelectedEvents:: No selected events ." << std::endl;
+    return;
+  }
+  
+  // loop over all events
+  for (int i=0; i<nevents; i++)
+  {
+    // at least be the Reg Energy
+    *(E1.at(i)) = *(EReg1.at(i));
+    *(E2.at(i)) = *(EReg2.at(i));
+
+    // apply eta scale
+    if (ScaleBin1.at(i)>=0.) (*(E1.at(i))) *= EtaScale.at( ScaleBin1.at(i) ).s;
+    if (ScaleBin2.at(i)>=0.) (*(E2.at(i))) *= EtaScale.at( ScaleBin2.at(i) ).s;
+
+  }
+
+}
 
 
 ///////////
