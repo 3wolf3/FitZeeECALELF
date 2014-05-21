@@ -196,7 +196,11 @@ int main(int argc, char* argv[])
   // reading data
   TChain* tree = new TChain("tree", "tree");
   tree->Add(rootfile_in);
-  
+
+  // reading extra tree
+  TChain* extree = new TChain("extraCalibTree", "extraCalibTree");
+  extree->Add(rootfile_in); 
+ 
   // output root file
   TFile* fout = new TFile(rootfile_out, "recreate");
   
@@ -205,7 +209,7 @@ int main(int argc, char* argv[])
 
   // Fill all events into vectors
   //FillAllEvents(tree, 0);
-  FillAllEvents(tree, 2, RegVersion, false);
+  FillAllEvents(tree, extree, 2, RegVersion, false, doEvenOdd);
   
   // delete the chain no more need it
   tree->Delete();
