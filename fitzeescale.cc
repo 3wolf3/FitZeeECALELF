@@ -1155,7 +1155,7 @@ int main(int argc, char* argv[])
         // select events in this EtaScale bin
         nEvents = SelectEventsInOneScaleBin(ibin, _combine);
 
-        if (debug>0) std::cout << " Step 2.2, iIter " << iIter << ", ibin " << ibin << ": define the signal fraction " << std::endl;
+        if (debug>0) std::cout << " Step 2.2, iIter " << iIter << ", ibin " << ibin << ": event selected: " << nEvents << std::endl;
         // define the signal fraction
         nSignals = int(signalFraction*(double)nEvents);
      
@@ -1163,12 +1163,12 @@ int main(int argc, char* argv[])
         // apply previously fitted EtaScale to selected events.
         ApplyEtaRingEtaScaleToSelectedEvents(EtaScale);
 
-        if (debug>0) std::cout << " Step 2.2, iIter " << iIter << ", ibin " << ibin << ": define migrad " << std::endl;
+        if (debug>0) std::cout << " Step 2.2, iIter " << iIter << ", ibin " << ibin << ": init data and parameters " << std::endl;
 
         // initialize fcn using this set of events
         fcn.initDataScale(nEvents, nSignals,
-                       E1, EReg1, Eta1, Phi1, ScaleBin1,
-                       E2, EReg2, Eta2, Phi2, ScaleBin2,
+                       E1, EReg1, Eta1, Phi1, UseEle1,
+                       E2, EReg2, Eta2, Phi2, UseEle2,
                        debug, 61);
 
         // initialize PDF

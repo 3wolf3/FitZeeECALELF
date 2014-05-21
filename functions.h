@@ -1362,14 +1362,19 @@ public:
         //   otherwise, use E1 or E2. And EReg1/2 store the original Regression Energy, but E1 E2 store the Regression
         //   Energy times the previously fitted Eta-Scales.
 
+        //if (_debug>0) std::cout << "functions.h :: Method 61 " << std::endl;
+
+        //if (_debug>0) std::cout << "functions.h :: Method 61 regression energy" << std::endl;
         // regression energy
         double EReg1 = *(_EReg1.at(i));
         double EReg2 = *(_EReg2.at(i));
 
+        //if (_debug>0) std::cout << "functions.h :: Method 61 apply energy scale" << std::endl;
         // apply energy scale
         if (_UseEle1.at(i)) EReg1 *= par.at(0);
         if (_UseEle2.at(i)) EReg2 *= par.at(0);
 
+        //if (_debug>0) std::cout << "functions.h :: Method 61 energy after energy scale" << std::endl;
         // energy after energy scale
         if (_UseEle1.at(i)) E1 = EReg1;
         if (_UseEle2.at(i)) E2 = EReg2;
