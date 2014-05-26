@@ -380,7 +380,7 @@ void FillAllEvents(TChain* tree, TChain* extree, const int debug=0, const std::s
 
   nEventsAll = (int)tree->GetEntries();
   nSignalsAll = 0.99999*nEventsAll; // guess a number
-  if (debug>1) std::cout << "fill all data vectors: Using Regression "<< regVersion << std::endl;
+  if (debug>1) std::cout << "fill all data vectors: " << nEventsAll << " events Using Regression "<< regVersion << std::endl;
 
   // fill data vectors
   for (int i=0; i<nEventsAll; i++){
@@ -911,6 +911,7 @@ int SelectEventsInOneSeed(int ix, int iy, int iz, int doEvenOdd=0, std::string C
     if (!takeEle1&&!takeEle2)
     {
       continue;
+     std::cout << " continue " << std::endl;
     }
 
     // if not continue above, it is a useful event to use
@@ -1755,6 +1756,10 @@ void ApplyEtaRingEtaScaleToAllEventsABCD(const std::vector<EtaRingEnergyScale>& 
     // apply eta scale
     if (bin1>=0) allEReg1.at(i) *= EtaScale->at(bin1).s;
     if (bin2>=0) allEReg2.at(i) *= EtaScale->at(bin2).s;
+
+    // debug
+    //if (bin1>=0) std::cout << "EtaScale = " << EtaScale->at(bin1).s << std::endl; 
+    //if (bin2>=0) std::cout << "EtaScale = " << EtaScale->at(bin2).s << std::endl; 
 
   }
 

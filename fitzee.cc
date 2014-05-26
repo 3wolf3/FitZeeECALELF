@@ -69,7 +69,7 @@ char etascale_refD[3000];
 int doEvenOdd = 0; // 0 for not to split, 1 for odd, 2 for even 
 
 // combine, can be EBEB, EBEE, EEEE, EE (any one in EE), EB (any one in EB)
-std::string _combine = "EE";
+std::string _combine = "";
 
 int main(int argc, char* argv[])
 {
@@ -194,7 +194,7 @@ int main(int argc, char* argv[])
   std::cout << " Start program. " << std::endl;
   
   // reading data
-  TChain* tree = new TChain("tree", "tree");
+  TChain* tree = new TChain("selected", "selected");
   tree->Add(rootfile_in);
 
   // reading extra tree
@@ -206,10 +206,11 @@ int main(int argc, char* argv[])
   
   // Set the branches for the TChain/TTree
   SetTreeBranch(tree);
+  SetExtraTreeBranch(extree);
 
   // Fill all events into vectors
   //FillAllEvents(tree, 0);
-  FillAllEvents(tree, extree, 2, RegVersion, false, doEvenOdd);
+  FillAllEvents(tree, extree, 2, RegVersion, true, doEvenOdd);
   
   // delete the chain no more need it
   tree->Delete();
@@ -222,9 +223,9 @@ int main(int argc, char* argv[])
   
   // select events for
   //nEvents = SelectSubsetEvents(cells);
-  nEvents = SelectSubsetEventsWithEBOrEECombine(cells, _combine);
+  //nEvents = SelectSubsetEventsWithEBOrEECombine(cells, _combine);
   
-  std::cout << "nEvents = " << nEvents << std::endl;
+  //std::cout << "nEvents = " << nEvents << std::endl;
  
   // reference scales
   std::vector<double> scalesref;
@@ -424,20 +425,20 @@ int main(int argc, char* argv[])
   }
 
 
-  if (!nEvents)
-  {
-    std::cout << "No event selected, quit the job." << std::endl;
-    return 0;
-  }
+  //if (!nEvents)
+  //{
+  //  std::cout << "No event selected, quit the job." << std::endl;
+  //  return 0;
+  //}
   
   if (debug>0) std::cout << " Step 1: Initialize function overall " << std::endl;
   
   // define the fitting function
-  BWGSLikelihoodFCN fcn(nEvents, nSignals,
-                        E1, EReg1, Eta1, Phi1, nHits1, HitE1, HitIX1, HitIY1, HitIZ1,
-                        E2, EReg2, Eta2, Phi2, nHits2, HitE2, HitIX2, HitIY2, HitIZ2,
-                        debug, method);
-  //BWGSLikelihoodFCN fcn();
+  //BWGSLikelihoodFCN fcn(nEvents, nSignals,
+  //                      E1, EReg1, Eta1, Phi1, nHits1, HitE1, HitIX1, HitIY1, HitIZ1,
+  //                      E2, EReg2, Eta2, Phi2, nHits2, HitE2, HitIX2, HitIY2, HitIZ2,
+  //                      debug, method);
+  BWGSLikelihoodFCN fcn;
 
   if (debug>0) std::cout << " Step 1: Initialize PDF overall " << std::endl;
   // initialize PDF
@@ -999,6 +1000,7 @@ int main(int argc, char* argv[])
 
       // select events for only this cell
       nEvents = SelectEventsInOneSeed(ix, iy, iz, doEvenOdd, _combine);
+      std::cout << "cell (ix, iy, iz) = " << ix << ", " << iy << ", " << iz << std::endl;
 
       // if nEvents==0, it means no electrons in these events give its energy of 10% to this fitting cells,
       //   therefore, I skip this cell here, set it to be a default value 1.0 0.1, and continue the next cell
