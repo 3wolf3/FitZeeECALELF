@@ -1,4 +1,4 @@
-#include "copyTree.h"
+#include "copyTree.hpp"
 #include "TFile.h"
 
 int main(int argc, char* argv[])

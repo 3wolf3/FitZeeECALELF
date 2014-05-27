@@ -1,7 +1,7 @@
 // Authors: Hengne Li of UVa at CERN in 2013   
  
-#include "functions.h"
-#include "variables.h"
+#include "functions.hpp"
+#include "variables.hpp"
 #include "Minuit2/FunctionMinimum.h"
 #include "Minuit2/MnMigrad.h"
 #include "Minuit2/MnScan.h"
