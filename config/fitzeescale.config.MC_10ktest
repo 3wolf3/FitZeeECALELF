@@ -1,0 +1,31 @@
+
+
+// fitting mode
+int mode 781
+
+// fitting method
+int method 7
+
+
+// input and output files
+string rootfile_in  ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012AB_10k.root
+string rootfile_out  fitzeescale_out_AB_10ktest3.root
+
+
+// signal fraction of the signal + background Mee fits
+double signalFraction 0.9999
+
+// gaussian resolution of the Mee distribution
+double gaus_reso 1.5
+
+// energy regression version
+string RegVersion V8Elec
+
+// debug level
+int debug  1
+
+// even or odd eventNumber check: 0 for all ; 1 for odd; 2 for even. 
+int doEvenOdd  0
+
+// eta-scale reference file, only for mode = 73, 75, 77 
+string parfile_ref  

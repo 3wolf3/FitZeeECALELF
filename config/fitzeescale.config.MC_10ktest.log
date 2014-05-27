@@ -1,0 +1,20 @@
+./fitzeescale.exe
+  mode = 781
+  method = 7
+  rootfile_in = ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012AB_10k.root
+  rootfile_out = fitzeescale_out_AB_10ktest3.root
+  signalFraction = 0.9999
+  GaussianResolution = 1.5
+  RegVersion = V8Elec
+  doEvenOdd = 0
+ Start program. 
+fill all data vectors: 10000 events Using Regression V8Elec
+ Step 1: fill all events: 10000
+ Step 1: Initialize PDF overall 
+ Step 2: do fit mode==781 
+Step 2.1.) do a fit using at most 10k events, to fit all the Eta-Rings in one step.
+ Step 2.1: init data and pars : nEvents = 10000
+ Step 2.1: define migrad 
+ Step 2.1: do fit 
+Info in <Minuit2>: VariableMetricBuilder: no improvement in line search
+Info in <Minuit2>: VariableMetricBuilder: machine accuracy limits further improvement.
