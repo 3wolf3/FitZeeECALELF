@@ -207,6 +207,32 @@ public:
   void initDataScale(int nEvents, int nSignals,
                 const std::vector<double*>& E1,
                 const std::vector<double*>& EReg1,
+                const std::vector<double*>& RawSCE1,
+                const std::vector<double*>& Eta1,
+                const std::vector<double*>& Phi1,
+                const std::vector<bool>& UseEle1,
+                const std::vector<double*>& E2,
+                const std::vector<double*>& EReg2,
+                const std::vector<double*>& RawSCE2,
+                const std::vector<double*>& Eta2,
+                const std::vector<double*>& Phi2,
+                const std::vector<bool>& UseEle2,
+                const int debug=0,
+                const int method=0)
+  {
+    initDataScale(nEvents, nSignals,
+          E1, EReg1, Eta1, Phi1, UseEle1,
+          E2, EReg2, Eta2, Phi2, UseEle2,
+          debug, method);
+
+    _RawSCE1 = RawSCE1;
+    _RawSCE1 = RawSCE1;
+
+  }
+
+  void initDataScale(int nEvents, int nSignals,
+                const std::vector<double*>& E1,
+                const std::vector<double*>& EReg1,
                 const std::vector<double*>& Eta1,
                 const std::vector<double*>& Phi1,
                 const std::vector<int>& ScaleBin1,
@@ -268,6 +294,33 @@ public:
     }
 
   }
+
+  void initDataScale(int nEvents, int nSignals,
+                const std::vector<double*>& E1,
+                const std::vector<double*>& EReg1,
+                const std::vector<double*>& RawSCE1,
+                const std::vector<double*>& Eta1,
+                const std::vector<double*>& Phi1,
+                const std::vector<int>& ScaleBin1,
+                const std::vector<double*>& E2,
+                const std::vector<double*>& EReg2,
+                const std::vector<double*>& RawSCE2,
+                const std::vector<double*>& Eta2,
+                const std::vector<double*>& Phi2,
+                const std::vector<int>& ScaleBin2,
+                const int debug=0,
+                const int method=0)
+  {
+    initDataScale(nEvents, nSignals,
+          E1, EReg1, Eta1, Phi1, ScaleBin1,
+          E2, EReg2, Eta2, Phi2, ScaleBin2,
+          debug, method);
+
+    _RawSCE1 = RawSCE1;
+    _RawSCE1 = RawSCE1;
+
+  }
+
 
   void initDataSeed(int nEvents, int nSignals,
                 const std::vector<double*>& E1,
@@ -1376,8 +1429,8 @@ public:
 
         //if (_debug>0) std::cout << "functions.h :: Method 61 energy after energy scale" << std::endl;
         // energy after energy scale
-        if (_UseEle1.at(i)) E1 = EReg1;
-        if (_UseEle2.at(i)) E2 = EReg2;
+        E1 = EReg1;
+        E2 = EReg2;
 
       }
       else if (method==7)
@@ -1401,6 +1454,77 @@ public:
         E2 = EReg2;
 
       }
+      else if (method==7820)
+      {
+        // method 7820 is similar to method 7 , but use New Raw SC energy that recalculated from the New ICs and hits energy
+        // designed dedicated for mode 782 in the fitzeescale.cpp for the first round of fit and last round of checking results.
+        //    Enew = Ereg/Eraw(old) * Eraw(new)
+
+        // Method 7 is not to recalib, but to determine the energy scale at the electron level,
+        //  i.e. not at the cell level.
+        // different from method==6, method 7 tries to fit eta scales of serveral parameters at once.
+
+        // regression energy
+        double EReg1 = *(_EReg1.at(i));
+        double EReg2 = *(_EReg2.at(i));
+
+        // keep the regression energy scale
+        double RegScale1 = EReg1/E1;
+        double RegScale2 = EReg2/E2;
+ 
+        // get recaculated new Raw Energy        
+        double NewRawE1 = *(_RawSCE1.at(i));
+        double NewRawE2 = *(_RawSCE2.at(i));
+
+        // apply energy scale
+        if(_ScaleBin1.at(i)>=0) NewRawE1 *= par.at(_ScaleBin1.at(i));
+        if(_ScaleBin2.at(i)>=0) NewRawE2 *= par.at(_ScaleBin2.at(i));
+
+        //std::cout << "method 7: _ScaleBin1.at(i) = " << _ScaleBin1.at(i)
+        //             << "; _ScaleBin2.at(i) = " << _ScaleBin2.at(i) << std::endl;
+        // energy after energy scale
+        E1 = RegScale1 * NewRawE1;
+        E2 = RegScale2 * NewRawE2;
+
+      }
+      else if (method==7821)
+      {
+        // method 7821 is following method 61, but similar to method 7820 dedicated for mode 782 
+        //   for the fit of each eta ring, using the following way of calculating the energy
+        //      Enew = Ereg/Eraw(old) * Eraw(new)
+
+        // Method 61, similar to 6, is not to recalib but to determine the energy scale at the electron level,
+        //  i.e. not at the cell level.
+        // In addtion, Method 61 is desiged for mode 781, that only if _UseEle1 or 2 happens, you use the EReg1 or 2,
+        //   otherwise, use E1 or E2. And EReg1/2 store the original Regression Energy, but E1 E2 store the Regression
+        //   Energy times the previously fitted Eta-Scales.
+
+        //if (_debug>0) std::cout << "functions.h :: Method 61 " << std::endl;
+
+        //if (_debug>0) std::cout << "functions.h :: Method 61 regression energy" << std::endl;
+        // regression energy
+        double EReg1 = *(_EReg1.at(i));
+        double EReg2 = *(_EReg2.at(i));
+
+        // keep the regression energy scale
+        double RegScale1 = EReg1/E1;
+        double RegScale2 = EReg2/E2;
+
+        // get recaculated new Raw Energy
+        double NewRawE1 = *(_RawSCE1.at(i));
+        double NewRawE2 = *(_RawSCE2.at(i));
+
+        //if (_debug>0) std::cout << "functions.h :: Method 61 apply energy scale" << std::endl;
+        // apply energy scale
+        if (_UseEle1.at(i)) NewRawE1 *= par.at(0);
+        if (_UseEle2.at(i)) NewRawE2 *= par.at(0);
+
+        //if (_debug>0) std::cout << "functions.h :: Method 61 energy after energy scale" << std::endl;
+        // energy after energy scale
+        E1 = RegScale1 * NewRawE1;
+        E2 = RegScale2 * NewRawE2;
+
+      }      
       else if (method==8)
       {
         // Method 8 is to fit the IC by applying the IC of the Seed crystal to the rawEnergy of the whole SC.
@@ -1783,6 +1907,9 @@ private:
   
   std::vector<double*> _RawEEcal1; 
   std::vector<double*> _RawEEcal2;
+
+  std::vector<double*> _RawSCE1;
+  std::vector<double*> _RawSCE2;
  
   std::vector<double> _Mass;
   mutable std::vector<double> _MassRecalc;

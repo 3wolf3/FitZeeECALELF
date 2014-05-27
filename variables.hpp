@@ -6,7 +6,7 @@
 #include <utility>
 #include <fstream>
 #include <sstream>
-
+#include <map>
 
 typedef struct
 {
@@ -87,6 +87,8 @@ std::vector<int> allSeedIX1, allSeedIY1, allSeedIZ1;
 std::vector<int> allSeedIX2, allSeedIY2, allSeedIZ2;
 std::vector<double> allRawEEcal1, allRawEEcal2;
 std::vector<int> allScaleBin1, allScaleBin2;
+std::vector<double> allRawSCE1, allRawSCE2;
+std::vector<double> allRawESE1, allRawESE2;
 
 // store selected events
 int nEvents, nSignals;
@@ -101,6 +103,8 @@ std::vector<int> ScaleBin1, ScaleBin2;
 std::vector<int*> SeedIX1, SeedIY1, SeedIZ1;
 std::vector<int*> SeedIX2, SeedIY2, SeedIZ2;
 std::vector<double*> RawEEcal1, RawEEcal2;
+std::vector<double*> RawSCE1, RawSCE2;
+std::vector<double*> RawESE1, RawESE2;
 
 //Declaration of leaves types
    Int_t           runNumber;
@@ -399,7 +403,8 @@ void FillAllEvents(TChain* tree, TChain* extree, const int debug=0, const std::s
     allEvtNum.push_back(eventNumber);
   
     // first electron
-    allE1.push_back(rawEnergySCEle[0]); // SC raw as in Regression
+    //allE1.push_back(rawEnergySCEle[0]); // SC raw as in Regression
+    allE1.push_back(rawEnergySCEle[0]+esEnergySCEle[0]); // need to know rawEnergySCEle is ECAL only or including ES?
     if(regVersion=="V5Elec") allEReg1.push_back(energySCEle_regrCorrSemiParV5_ele[0]);
     else if(regVersion=="V6Elec") allEReg1.push_back(energySCEle_regrCorrSemiParV6_ele[0]);
     else if(regVersion=="V7Elec") allEReg1.push_back(energySCEle_regrCorrSemiParV7_ele[0]);
@@ -407,7 +412,9 @@ void FillAllEvents(TChain* tree, TChain* extree, const int debug=0, const std::s
     allEta1.push_back(etaEle[0]);
     allPhi1.push_back(phiEle[0]);
     allSCEta1.push_back(etaSCEle[0]);
-    allRawEEcal1.push_back(rawEnergySCEle[0]-esEnergySCEle[0]);
+    //allRawEEcal1.push_back(rawEnergySCEle[0]-esEnergySCEle[0]);
+    allRawEEcal1.push_back(rawEnergySCEle[0]);
+    allRawESE1.push_back(esEnergySCEle[0]);
     allSeedIX1.push_back(seedXSCEle[0]);
     allSeedIY1.push_back(seedYSCEle[0]);
     if (etaSCEle[0]<-1.49) allSeedIZ1.push_back(-1);
@@ -434,7 +441,8 @@ void FillAllEvents(TChain* tree, TChain* extree, const int debug=0, const std::s
       allHitIZ1.push_back(hitIZ1);
     }
     // second electron
-    allE2.push_back(rawEnergySCEle[1]); // SC raw as in Regression
+    //allE2.push_back(rawEnergySCEle[1]); // SC raw as in Regression
+    allE2.push_back(rawEnergySCEle[1]+esEnergySCEle[1]); // 
     if(regVersion=="V5Elec") allEReg2.push_back(energySCEle_regrCorrSemiParV5_ele[1]);
     else if(regVersion=="V6Elec") allEReg2.push_back(energySCEle_regrCorrSemiParV6_ele[1]);
     else if(regVersion=="V7Elec") allEReg2.push_back(energySCEle_regrCorrSemiParV7_ele[1]);
@@ -442,7 +450,9 @@ void FillAllEvents(TChain* tree, TChain* extree, const int debug=0, const std::s
     allEta2.push_back(etaEle[1]);
     allPhi2.push_back(phiEle[1]);
     allSCEta2.push_back(etaSCEle[1]);
-    allRawEEcal2.push_back(rawEnergySCEle[1]-esEnergySCEle[1]);
+    //allRawEEcal2.push_back(rawEnergySCEle[1]-esEnergySCEle[1]);
+    allRawEEcal2.push_back(rawEnergySCEle[1]);
+    allRawESE2.push_back(esEnergySCEle[1]);
     allSeedIX2.push_back(seedXSCEle[1]);
     allSeedIY2.push_back(seedYSCEle[1]);
     if (etaSCEle[1]<-1.49) allSeedIZ2.push_back(-1);
@@ -470,6 +480,73 @@ void FillAllEvents(TChain* tree, TChain* extree, const int debug=0, const std::s
   }
   nEventsAll = (int)allE1.size();
   nSignalsAll = 0.99999*nEventsAll; // guess a number
+}
+
+
+double GetICFromCalibTable(const int& ix, const int& iy, const int& iz, const std::map<int, std::map<int, std::map<int, calibRecord> > >& calibTable) 
+{
+    std::map<int, std::map<int, std::map<int, calibRecord> > >::const_iterator _it_ix;
+    std::map<int, std::map<int, calibRecord> >::const_iterator _it_iy;
+    std::map<int, calibRecord>::const_iterator _it_iz;
+    // check ix
+    _it_ix = calibTable.find(ix);
+    if (_it_ix == calibTable.end()) return -1000.0 ;
+    // check iy
+    _it_iy = (_it_ix->second).find(iy);
+    if (_it_iy == (_it_ix->second).end()) return -1000.0;
+    // check iz
+    _it_iz = (_it_iy->second).find(iz);
+    if (_it_iz == (_it_iy->second).end()) return -1000.0;
+    //
+    return _it_iz->second.c ;
+
+}
+
+
+// calculate New Raw SC Energy for all Events
+void CalculateNewRawSCEnergyForAllEvents(std::map<int, std::map<int, std::map<int, calibRecord> > > calibTable)
+{
+
+  int nEventsAll = (int)allE1.size();
+
+  // first make sure I have all Hits energies stored.
+  if (nEventsAll != (int) allHitE1.size() ) 
+  {
+    std::cout << "ERROR:: CalculateNewRawSCEnergyForAllEvents, here I need all Hits Energies. " << std::endl; 
+    abort();
+  }
+
+  //loop over all events
+  for (int i=0; i<nEventsAll; i++)
+  {
+    double NewRawE1(0);
+    double NewRawE2(0);
+
+    for (int ih=0; ih<allnHits1.at(i); ih++)
+    {
+      const int ix = allHitIX1.at(i).at(ih);
+      const int iy = allHitIY1.at(i).at(ih);
+      const int iz = allHitIZ1.at(i).at(ih);
+      double icc = GetICFromCalibTable(ix, iy, iz, calibTable);
+      double NewE = icc * allHitE1.at(i).at(ih);
+      NewRawE1 += NewE;
+    }
+
+    for (int ih=0; ih<allnHits2.at(i); ih++)
+    {
+      const int ix = allHitIX2.at(i).at(ih);
+      const int iy = allHitIY2.at(i).at(ih);
+      const int iz = allHitIZ2.at(i).at(ih);
+      double icc = GetICFromCalibTable(ix, iy, iz, calibTable);
+      double NewE = icc * allHitE2.at(i).at(ih);
+      NewRawE2 += NewE;
+    }
+
+    allRawSCE1.push_back(NewRawE1 + allRawESE1.at(i));
+    allRawSCE2.push_back(NewRawE2 + allRawESE2.at(i));
+    
+  }
+
 }
 
 
@@ -1181,12 +1258,14 @@ int SelectEventsInOneScaleBin(int scale_bin, std::string Combine="")
   nSignals = 0;
   E1.clear();
   EReg1.clear();
+  RawSCE1.clear();
   Eta1.clear();
   ScaleBin1.clear();
   UseEle1.clear();
   Phi1.clear();
   E2.clear();
   EReg2.clear();
+  RawSCE2.clear();
   Eta2.clear();
   Phi2.clear();
   ScaleBin2.clear();
@@ -1231,12 +1310,14 @@ int SelectEventsInOneScaleBin(int scale_bin, std::string Combine="")
     // if not continue above, it is a useful event to use
     E1.push_back(&(allE1.at(i)));
     EReg1.push_back(&(allEReg1.at(i)));
+    RawSCE1.push_back(&(allRawSCE1.at(i)));
     Eta1.push_back(&(allEta1.at(i)));
     Phi1.push_back(&(allPhi1.at(i)));
     ScaleBin1.push_back(allScaleBin1.at(i));
     UseEle1.push_back(takeEle1);
     E2.push_back(&(allE2.at(i)));
     EReg2.push_back(&(allEReg2.at(i)));
+    RawSCE2.push_back(&(allRawSCE2.at(i)));
     Eta2.push_back(&(allEta2.at(i)));
     Phi2.push_back(&(allPhi2.at(i)));
     ScaleBin2.push_back(allScaleBin2.at(i));
@@ -1252,6 +1333,82 @@ int SelectEventsInOneScaleBin(int scale_bin, std::string Combine="")
 
 
 }
+
+///
+int SelectEventsForEtaScaleFits(std::string Combine="", int max_events = -1)
+{
+  // clear previous vectors
+  nEvents = 0;
+  nSignals = 0;
+  E1.clear();
+  EReg1.clear();
+  RawSCE1.clear();
+  Eta1.clear();
+  ScaleBin1.clear();
+  UseEle1.clear();
+  Phi1.clear();
+  E2.clear();
+  EReg2.clear();
+  RawSCE2.clear();
+  Eta2.clear();
+  Phi2.clear();
+  ScaleBin2.clear();
+  UseEle2.clear();
+
+  // loop over all events and select events
+  for (int i=0; i<nEventsAll; i++)
+  {
+    // EB or EE combinatioin check
+    if ( Combine=="EBEB" ) // both in EB
+    {
+      if ( !(fabs(allSCEta1[i])<1.49&&fabs(allSCEta2[i])<1.49) ) continue;
+    }
+    if ( Combine=="EBEE" ) // one in EB one in EE
+    {
+      if ( !( (fabs(allSCEta1[i])<1.49&&fabs(allSCEta2[i])>1.49)||(fabs(allSCEta2[i])<1.49&&fabs(allSCEta1[i])>1.49) ) ) continue;
+    }
+    if ( Combine=="EEEE" ) // both in EE
+    {
+      if ( !(fabs(allSCEta1[i])>1.49&&fabs(allSCEta2[i])>1.49) ) continue;
+    }
+    if ( Combine=="EE" ) // any one of the two in EE
+    {
+      if ( !(fabs(allSCEta1[i])>1.49||fabs(allSCEta2[i])>1.49) ) continue;
+    }
+    if ( Combine=="EB" ) // any one of the two in EB
+    {
+      if ( !(fabs(allSCEta1[i])<1.49||fabs(allSCEta2[i])<1.49) ) continue;
+    }
+    // note, if not any of the string above, this event will always pass this check.
+
+    E1.push_back(&(allE1.at(i)));
+    EReg1.push_back(&(allEReg1.at(i)));
+    RawSCE1.push_back(&(allRawSCE1.at(i)));
+    Eta1.push_back(&(allEta1.at(i)));
+    Phi1.push_back(&(allPhi1.at(i)));
+    ScaleBin1.push_back(allScaleBin1.at(i));
+    UseEle1.push_back(true);
+    E2.push_back(&(allE2.at(i)));
+    EReg2.push_back(&(allEReg2.at(i)));
+    RawSCE2.push_back(&(allRawSCE2.at(i)));
+    Eta2.push_back(&(allEta2.at(i)));
+    Phi2.push_back(&(allPhi2.at(i)));
+    ScaleBin2.push_back(allScaleBin2.at(i));
+    UseEle2.push_back(true);
+ 
+    // stop storing events if reached the max events
+    if ( max_events!=-1 && i<=max_events) break;
+
+  }
+
+  // nEvents
+  nEvents = (int)E1.size();
+  nSignals = nEvents; // assume no background (fix me)
+
+  return nEvents;
+}
+
+
 
 // select events in one Eta bin
 int SelectEventsInOneEtaBin(double bin_min, double bin_max, std::string Combine="")
@@ -2392,3 +2549,76 @@ std::vector<std::vector<int> > GetAllCellsFromCalibTable(const char* filename)
   return cells;
   
 }
+
+std::vector<EtaRingEnergyScale> GetEmptyEtaRingEtaScaleBins()
+{
+
+    // Eta bins
+    std::vector<EtaRingEnergyScale> EtaScale;
+
+    // 39 EE- bins
+    for (int ibin=-39; ibin<=-1; ibin++)
+    {
+      EtaRingEnergyScale Ascale = {-85+ibin, 1.0, 0.001};
+      EtaScale.push_back(Ascale);
+    }
+    // 85 EB- bins
+    for (int ibin=-85; ibin<=-1; ibin++)
+    {
+      EtaRingEnergyScale Ascale = {ibin, 1.0, 0.001};
+      EtaScale.push_back(Ascale);
+    }
+    // 85 EB+ bins
+    for (int ibin=1; ibin<=85; ibin++)
+    {
+      EtaRingEnergyScale Ascale = {ibin, 1.0, 0.001};
+      EtaScale.push_back(Ascale);
+    }
+    // 39 EE+ bins
+    for (int ibin=1; ibin<=39; ibin++)
+    {
+      EtaRingEnergyScale Ascale = {85+ibin, 1.0, 0.001};
+      EtaScale.push_back(Ascale);
+    }
+
+    return EtaScale;
+}
+
+
+std::map<int, std::map<int, std::map<int, calibRecord> > > GetCalibTableMapFromFile(const char* filename = "calibTableRef_in.dat")
+{
+
+  std::map<int, std::map<int, std::map<int, calibRecord> > > aCalibTableMap;
+
+  std::ifstream myfile(filename);
+  std::string line;
+  if (myfile.is_open())
+  {
+    while (getline(myfile,line))
+    {
+      calibRecord calib;
+      std::stringstream sline(line);
+      sline >> calib.idx
+            >> calib.ix
+             >> calib.iy
+             >> calib.iz
+             >> calib.c
+             >> calib.cerr
+             >> calib.fixed
+             >> calib.nfits ;
+          
+      aCalibTableMap[calib.ix][calib.iy][calib.iz] = calib;
+
+    }
+    myfile.close();
+  }
+  else 
+  {
+    std::cout << "GetCalibTableMapFromFile:: fail to open file " << filename << std::endl;
+    abort(); 
+  }
+  
+  return aCalibTableMap;
+
+}
+
