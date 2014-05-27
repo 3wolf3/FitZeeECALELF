@@ -411,7 +411,7 @@ void FillAllEvents(TChain* tree, TChain* extree, const int debug=0, const std::s
     allSeedIX1.push_back(seedXSCEle[0]);
     allSeedIY1.push_back(seedYSCEle[0]);
     if (etaSCEle[0]<-1.49) allSeedIZ1.push_back(-1);
-    if (etaSCEle[0]>=-1.49&&etaSCEle[0]<=1.49) allSeedIZ1.push_back(0);
+    else if (etaSCEle[0]>=-1.49&&etaSCEle[0]<=1.49) allSeedIZ1.push_back(0);
     else allSeedIZ1.push_back(1);
 
     // if fit scale, then we don't need the following information
@@ -425,7 +425,7 @@ void FillAllEvents(TChain* tree, TChain* extree, const int debug=0, const std::s
         hitIX1.push_back(XRecHitSCEle1->at(ii));
         hitIY1.push_back(YRecHitSCEle1->at(ii));
         if (etaSCEle[0]<-1.49) hitIZ1.push_back(-1);
-        if (etaSCEle[0]>=-1.49&&etaSCEle[0]<=1.49) hitIZ1.push_back(0);
+        else if (etaSCEle[0]>=-1.49&&etaSCEle[0]<=1.49) hitIZ1.push_back(0);
         else hitIZ1.push_back(1);
       }
       allHitE1.push_back(hitE1);
@@ -446,7 +446,7 @@ void FillAllEvents(TChain* tree, TChain* extree, const int debug=0, const std::s
     allSeedIX2.push_back(seedXSCEle[1]);
     allSeedIY2.push_back(seedYSCEle[1]);
     if (etaSCEle[1]<-1.49) allSeedIZ2.push_back(-1);
-    if (etaSCEle[1]>=-1.49&&etaSCEle[1]<=1.49) allSeedIZ2.push_back(0);
+    else if (etaSCEle[1]>=-1.49&&etaSCEle[1]<=1.49) allSeedIZ2.push_back(0);
     else allSeedIZ2.push_back(1);
     // if fit scale, then we don't need the following information
     if(!fitscale)
@@ -459,7 +459,7 @@ void FillAllEvents(TChain* tree, TChain* extree, const int debug=0, const std::s
         hitIX2.push_back(XRecHitSCEle2->at(ii));
         hitIY2.push_back(YRecHitSCEle2->at(ii));
         if (etaSCEle[1]<-1.49) hitIZ2.push_back(-1);
-        if (etaSCEle[1]>=-1.49&&etaSCEle[1]<=1.49) hitIZ2.push_back(0);
+        else if (etaSCEle[1]>=-1.49&&etaSCEle[1]<=1.49) hitIZ2.push_back(0);
         else hitIZ2.push_back(1);
       }
       allHitE2.push_back(hitE2);
