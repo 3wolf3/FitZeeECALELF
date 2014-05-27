@@ -1,6 +1,10 @@
 {
 //TFile* file = new TFile("etascaleratio_ABC_inv.root");
-TFile* file = new TFile("fitzeescale_out_ABC_data.root");
+TFile* file = new TFile(
+"fitzeescale_out_D.root"
+//"fitzeescale_out_ABC.root"
+//"fitzeescale_out_ABC_data.root"
+);
 
 //TH1D* h1 = (TH1D*)file->Get("hEtaScaleRatio");
 TH1D* h1 = (TH1D*)file->Get("hEtaScale");
