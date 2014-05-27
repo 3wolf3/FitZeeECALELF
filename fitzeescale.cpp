@@ -2,6 +2,7 @@
  
 #include "functions.hpp"
 #include "variables.hpp"
+#include "config.hpp"
 #include "Minuit2/FunctionMinimum.h"
 #include "Minuit2/MnMigrad.h"
 #include "Minuit2/MnScan.h"
@@ -18,6 +19,7 @@
 #include "TGraph.h"
 #include <stdio.h>
 #include <iostream>
+#include <string>
 
 
 using namespace ROOT::Minuit2;
@@ -46,10 +48,10 @@ double _FitWindowLow = 80.0;
 double gaus_reso = 1.0;
 
 int debug = 0;
-char rootfile_in[1000];
-char rootfile_out[1000];
+std::string rootfile_in;
+std::string rootfile_out;
 
-char parfile_ref[1000];
+std::string parfile_ref;
 
 // combine, can be EBEB, EBEE, EEEE, EE (any one in EE), EB (any one in EB)
 std::string _combine = "";
@@ -65,56 +67,40 @@ int Iteration_Times = 2;
 
 int main(int argc, char* argv[])
 {
-  if (argc<4)
+  if( argc<2 ) 
   {
-    std::cout << argv[0] << " <mode> <input_file.root> <output_file.root> \\\n"
-              << "            <signalFraction> <method> <GaussResolution> <RegVersion> <debug> <parameter_file_reference.dat> <doEvenOdd>\n"
-    << std::endl;
+    std::cout << argv[0] << " config_file " << std::endl;
     return 0;
   }
-  mode = atoi(argv[1]);
-  sprintf(rootfile_in, "%s", argv[2]);
-  sprintf(rootfile_out, "%s", argv[3]);
 
-  if (argc>4)
-  {
-    signalFraction = atof(argv[4]);
-  }
+  // open steering file names
+  config  steer(std::string((const char*)argv[1]));
+ 
+
+  mode = steer.getInt("mode");
+
+  rootfile_in = steer.getString("rootfile_in"); 
+  rootfile_out = steer.getString("rootfile_out"); 
+
+  signalFraction = steer.getDouble("signalFraction"); 
   
-  if (argc>5)
-  {
-    method = atoi(argv[5]);
-  }
+  method = steer.getInt("method");
   
-  if (argc>6)
-  {
-    gaus_reso = atof(argv[6]);
-  }
+  gaus_reso = steer.getDouble("gaus_reso");
 
-  if (argc>7)
-  {
-    RegVersion = std::string(argv[7]);
-  }
+  RegVersion = steer.getString("RegVersion");
 
-  if (argc>8)
-  {
-    debug = atoi(argv[8]);
-  }
+  debug = steer.getInt("debug");
 
-  if (argc>9)
-  {
-    doEvenOdd = atoi(argv[9]);
-  }
+  doEvenOdd = steer.getInt("doEvenOdd");
 
-  if (argc>10)
-  {
-    sprintf(parfile_ref, "%s", argv[10]);
-  }
+  
  
   // check 
   if (mode==73||mode==75||mode==77)
   {
-    if (argc<=10) 
+    parfile_ref = steer.getString("parfile_ref");
+    if (parfile_ref=="") 
     {
       std::cout << "Missing parameters reference file. Please run " << argv[0] << " to print usage information. " << std::endl;  
       return 1;
@@ -136,14 +122,14 @@ int main(int argc, char* argv[])
   
   // reading data
   TChain* tree = new TChain("selected", "selected");
-  tree->Add(rootfile_in);
+  tree->Add(rootfile_in.c_str());
 
   // reading extra tree
   TChain* extree = new TChain("extraCalibTree", "extraCalibTree");
-  extree->Add(rootfile_in);
+  extree->Add(rootfile_in.c_str());
   
   // output root file
-  TFile* fout = new TFile(rootfile_out, "recreate");
+  TFile* fout = new TFile(rootfile_out.c_str(), "recreate");
   
   // Set the branches for the TChain/TTree
   SetTreeBranch(tree);
@@ -184,7 +170,7 @@ int main(int argc, char* argv[])
   if (mode==73) 
   {
     // read reference scales
-    std::ifstream reffile(parfile_ref);
+    std::ifstream reffile(parfile_ref.c_str());
     if (reffile.is_open())
     {
       std::string line;
@@ -204,7 +190,7 @@ int main(int argc, char* argv[])
   if (mode==75||mode==77)
   {
     // read reference scales
-    std::ifstream reffile(parfile_ref);
+    std::ifstream reffile(parfile_ref.c_str());
     if (reffile.is_open())
     {
       std::string line;

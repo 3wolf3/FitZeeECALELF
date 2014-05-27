@@ -7,7 +7,8 @@ ROOTLIBS = -L$(ROOTSYS)/lib \
            -lMathCore -lThread -lMinuit -lMinuit2 -lpthread -lTreePlayer \
            -Wl,-rpath,$(ROOTSYS)/lib -stdlib=libc++ -lm -ldl 
 
-ROOTCFLAGS = -pthread -m64 -I$(ROOTSYS)/include
+ROOTCFLAGS = -m64 -I$(ROOTSYS)/include
+#ROOTCFLAGS = -pthread -m64 -I$(ROOTSYS)/include
 
 CFLAGS = $(ROOTCFLAGS) -I.
 LIBS = $(ROOTLIBS) -L. 
