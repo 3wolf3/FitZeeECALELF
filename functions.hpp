@@ -1,7 +1,7 @@
 // Authors: Hengne Li of UVa at CERN in 2013
 
-#include "calibRecord.h"
-#include "voigt.h"
+#include "calibRecord.hpp"
+#include "voigt.hpp"
 #include "Minuit2/FCNGradientBase.h"
 #include "Minuit2/MnUserParameters.h"
 #include "TComplex.h"
