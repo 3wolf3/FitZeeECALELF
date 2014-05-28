@@ -1,0 +1,42 @@
+
+
+// fitting mode
+int mode 42
+
+// fitting method
+int method 8
+
+
+// input and output files
+string rootfile_in  copyTreeExtra_out_ABC_EEp.root
+string rootfile_out  fitzee_out_DataHighEta_EEP_withEtaScale_V8Elec_Mode781_Method7_ABC_Data_3_NoHighEtaEEP.root
+
+// calib tables
+string calibtable_in calibTable_1stN_in.dat
+string calibtable_ref calibTable_1stN_in.dat
+string calibtable_out calibTable_out_DataHighEta_EEP_withEtaScale_V8Elec_Mode781_Method7_ABC_Data_3_NoHighEtaEEP.dat
+
+
+// signal fraction of the signal + background Mee fits
+double signalFraction 0.9999
+
+// gaussian resolution of the Mee distribution
+double gaus_reso 1.5
+
+// hit energy fraction (only for certain modes)
+double hitEnergyFraction  0.5
+
+// energy regression version
+string RegVersion V8Elec
+
+// debug level
+int debug  1
+
+// even or odd eventNumber check: 0 for all ; 1 for odd; 2 for even. 
+int doEvenOdd  0
+
+// eta-scale reference file, only for certain modes. 
+// For some modes this is a string of 4 eta-scale files separated with ";"
+string etascale_ref  fitzeescale_out_V8Elec_Mode781_Method7_ABC_Data_3_NoHighEtaEEP.dat;fitzeescale_out_V8Elec_Mode781_Method7_ABC_Data_3_NoHighEtaEEP.dat;fitzeescale_out_V8Elec_Mode781_Method7_ABC_Data_3_NoHighEtaEEP.dat;fitzeescale_out_V8Elec_Mode781_Method7_ABC_Data_3_NoHighEtaEEP.dat
+
+
