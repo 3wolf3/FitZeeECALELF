@@ -20,8 +20,8 @@ all: fitzeescale.exe fitzee.exe copyTree.exe drawMee.exe
 fitzeescale.exe: fitzeescale.o config.o
 	$(CC) fitzeescale.o config.o -o fitzeescale.exe $(CFLAGS) $(LIBS)
 
-fitzee.exe: fitzee.o
-	$(CC) fitzee.o -o fitzee.exe $(CFLAGS) $(LIBS)
+fitzee.exe: fitzee.o config.o
+	$(CC) fitzee.o config.o -o fitzee.exe $(CFLAGS) $(LIBS)
 
 copyTree.exe: copyTree.o
 	$(CC) copyTree.o -o copyTree.exe $(CFLAGS) $(LIBS)
