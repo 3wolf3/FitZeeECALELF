@@ -15,7 +15,13 @@ LIBS = $(ROOTLIBS) -L.
 
 CC = g++ 
 
-all: fitzeescale.exe fitzee.exe copyTree.exe drawMee.exe 
+all: fitzeescale.exe fitzee.exe copyTree.exe drawMee.exe draw_calibTable.exe 
+
+draw_calibTable.exe: draw_calibTable.o 
+	$(CC) draw_calibTable.o -o draw_calibTable.exe $(CFLAGS) $(LIBS)
+
+draw_calibTable.o: draw_calibTable.cpp
+	$(CC) -c draw_calibTable.cpp -o draw_calibTable.o $(CFLAGS)
 
 fitzeescale.exe: fitzeescale.o config.o
 	$(CC) fitzeescale.o config.o -o fitzeescale.exe $(CFLAGS) $(LIBS)
