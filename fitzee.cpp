@@ -2,6 +2,7 @@
  
 #include "functions.hpp"
 #include "variables.hpp"
+#include "config.hpp"
 #include "Minuit2/FunctionMinimum.h"
 #include "Minuit2/MnMigrad.h"
 #include "Minuit2/MnScan.h"
@@ -18,6 +19,7 @@
 #include "TGraph.h"
 #include <stdio.h>
 #include <iostream>
+#include <string>
 
 
 using namespace ROOT::Minuit2;
@@ -54,16 +56,16 @@ double hitEnergyFraction = 0.3;
 std::string RegVersion="V6Elec";
 
 int debug = 0;
-char rootfile_in[3000];
-char rootfile_out[3000];
-char calibtable_ref[3000];
-char calibtable_in[3000];
-char calibtable_out[3000];
-char etascale_ref[3000];
-char etascale_refA[3000];
-char etascale_refB[3000];
-char etascale_refC[3000];
-char etascale_refD[3000];
+std::string rootfile_in;
+std::string rootfile_out;
+std::string calibtable_ref;
+std::string calibtable_in;
+std::string calibtable_out;
+std::string etascale_ref;
+std::string etascale_refA;
+std::string etascale_refB;
+std::string etascale_refC;
+std::string etascale_refD;
 
 // even or odd events
 int doEvenOdd = 0; // 0 for not to split, 1 for odd, 2 for even 
@@ -73,66 +75,35 @@ std::string _combine = "";
 
 int main(int argc, char* argv[])
 {
-  if (argc<8)
+  if( argc<2 )
   {
-    std::cout << argv[0] << " <mode> <input_file.root> <output_file.root> \\\n"
-              << " <input_calibTable.dat> <out_calibTable.dat> <ref_calibTable.dat>\\\n" 
-              << " <signalFraction> <method> <GaussResolution> <hitEnergyFraction> <debug> \\\n"
-              << " <doEvenOdd> <RegVersion> <etascale_reference_files>"
-    << std::endl;
+    std::cout << argv[0] << " config_file " << std::endl;
     return 0;
   }
-  mode = atoi(argv[1]);
-  sprintf(rootfile_in, "%s", argv[2]);
-  sprintf(rootfile_out, "%s", argv[3]);
-  sprintf(calibtable_in, "%s", argv[4]);
-  sprintf(calibtable_out, "%s", argv[5]);
-  sprintf(calibtable_ref, "%s", argv[6]);
+
+  // open steering file names
+  config  steer(std::string((const char*)argv[1]));
+
+  mode = steer.getInt("mode");
+  method = steer.getInt("method");
+  rootfile_in = steer.getString("rootfile_in");
+  rootfile_out = steer.getString("rootfile_out");
+  calibtable_in = steer.getString("calibtable_in");
+  calibtable_out = steer.getString("calibtable_out");
+  calibtable_ref = steer.getString("calibtable_ref");
   
-  if (argc>7)
-  {
-    signalFraction = atof(argv[7]);
-  }
-  
-  if (argc>8)
-  {
-    method = atoi(argv[8]);
-  }
-  
-  if (argc>9)
-  {
-    gaus_reso = atof(argv[9]);
-  }
+  signalFraction = steer.getDouble("signalFraction");
+  gaus_reso = steer.getDouble("gaus_reso");
+  hitEnergyFraction = steer.getDouble("hitEnergyFraction");
+  debug = steer.getInt("debug");
+  doEvenOdd = steer.getInt("doEvenOdd");
+ 
+  RegVersion = steer.getString("RegVersion");
 
-  if (argc>10)
+  if (mode==31||mode==32||mode==33||mode==41||mode==42) 
   {
-    hitEnergyFraction = atof(argv[10]);
-  }
-
-  if (argc>11)
-  {
-    debug = atoi(argv[11]);
-  }
-  
-  if (argc>12)
-  {
-    doEvenOdd = atoi(argv[12]);
-  }
-
-  if (argc>13)
-  {
-    RegVersion = std::string(argv[13]);
-  }
-
-  if (argc>14)
-  {
-    sprintf(etascale_ref, "%s", argv[14]);
-  } 
-
-  // check
-  if (mode==31||mode==32)
-  {
-    if (argc<=14)
+    etascale_ref = steer.getString("etascale_ref");
+    if (etascale_ref=="")
     {
       std::cout << "Missing etascale reference file. Please run " << argv[0] << " to print usage information. " << std::endl;
       return 1;
@@ -142,14 +113,14 @@ int main(int argc, char* argv[])
   // mode 33 41 42
   if (mode==33||mode==41||mode==42)
   {
-    if (argc<=14)
+    if (etascale_ref=="")
     {
       std::cout << "Missing etascale reference file. Please run " << argv[0] << " to print usage information. " << std::endl;
       return 1;
     }
     else
     {
-      std::string s(argv[14]);
+      std::string s = etascale_ref;
       std::string delimiter = ";";
       std::vector<std::string> ss;
       size_t pos = 0;
@@ -161,10 +132,10 @@ int main(int argc, char* argv[])
       }
       ss.push_back(s);
 
-      sprintf(etascale_refA, "%s", ss.at(0).c_str());
-      sprintf(etascale_refB, "%s", ss.at(1).c_str());
-      sprintf(etascale_refC, "%s", ss.at(2).c_str());
-      sprintf(etascale_refD, "%s", ss.at(3).c_str());
+      etascale_refA = ss.at(0);
+      etascale_refB = ss.at(1);
+      etascale_refC = ss.at(2);
+      etascale_refD = ss.at(3);
 
     }
 
@@ -195,14 +166,14 @@ int main(int argc, char* argv[])
   
   // reading data
   TChain* tree = new TChain("selected", "selected");
-  tree->Add(rootfile_in);
+  tree->Add(rootfile_in.c_str());
 
   // reading extra tree
   TChain* extree = new TChain("extraCalibTree", "extraCalibTree");
-  extree->Add(rootfile_in); 
+  extree->Add(rootfile_in.c_str()); 
  
   // output root file
-  TFile* fout = new TFile(rootfile_out, "recreate");
+  TFile* fout = new TFile(rootfile_out.c_str(), "recreate");
   
   // Set the branches for the TChain/TTree
   SetTreeBranch(tree);
@@ -218,7 +189,7 @@ int main(int argc, char* argv[])
   // test fit
   
   // get all cells to be fit
-  std::vector<std::vector<int> > cells = GetAllCellsFromCalibTable(calibtable_in);
+  std::vector<std::vector<int> > cells = GetAllCellsFromCalibTable(calibtable_in.c_str());
 
   
   // select events for
@@ -232,7 +203,7 @@ int main(int argc, char* argv[])
   if (mode==31)
   {
     // read reference scales
-    std::ifstream reffile(etascale_ref);
+    std::ifstream reffile(etascale_ref.c_str());
     if (reffile.is_open())
     {
       std::string line;
@@ -252,7 +223,7 @@ int main(int argc, char* argv[])
   if (mode==32)
   {
     // read reference scales
-    std::ifstream reffile(etascale_ref);
+    std::ifstream reffile(etascale_ref.c_str());
     if (reffile.is_open())
     {
       std::string line;
@@ -279,7 +250,7 @@ int main(int argc, char* argv[])
   {
     // read reference scales
     // A
-    std::ifstream reffileA(etascale_refA);
+    std::ifstream reffileA(etascale_refA.c_str());
     if (reffileA.is_open())
     {
       std::string line;
@@ -296,7 +267,7 @@ int main(int argc, char* argv[])
       reffileA.close();
     }
     // B
-    std::ifstream reffileB(etascale_refB);
+    std::ifstream reffileB(etascale_refB.c_str());
     if (reffileB.is_open())
     {
       std::string line;
@@ -313,7 +284,7 @@ int main(int argc, char* argv[])
       reffileB.close();
     }
     // C
-    std::ifstream reffileC(etascale_refC);
+    std::ifstream reffileC(etascale_refC.c_str());
     if (reffileC.is_open())
     {
       std::string line;
@@ -330,7 +301,7 @@ int main(int argc, char* argv[])
       reffileC.close();
     }
     // D
-    std::ifstream reffileD(etascale_refD);
+    std::ifstream reffileD(etascale_refD.c_str());
     if (reffileD.is_open())
     {
       std::string line;
@@ -359,7 +330,7 @@ int main(int argc, char* argv[])
     initEEEtaRingTable();
     // read reference scales
     // A
-    std::ifstream reffileA(etascale_refA);
+    std::ifstream reffileA(etascale_refA.c_str());
     if (reffileA.is_open())
     {
       std::string line;
@@ -375,7 +346,7 @@ int main(int argc, char* argv[])
       reffileA.close();
     }
     // B
-    std::ifstream reffileB(etascale_refB);
+    std::ifstream reffileB(etascale_refB.c_str());
     if (reffileB.is_open())
     {
       std::string line;
@@ -391,7 +362,7 @@ int main(int argc, char* argv[])
       reffileB.close();
     }
     // C
-    std::ifstream reffileC(etascale_refC);
+    std::ifstream reffileC(etascale_refC.c_str());
     if (reffileC.is_open())
     {
       std::string line;
@@ -407,7 +378,7 @@ int main(int argc, char* argv[])
       reffileC.close();
     }
     // D
-    std::ifstream reffileD(etascale_refD);
+    std::ifstream reffileD(etascale_refD.c_str());
     if (reffileD.is_open())
     {
       std::string line;
@@ -452,11 +423,11 @@ int main(int argc, char* argv[])
   
   if (debug>0) std::cout << " Step 1: Initialize Data overall " << std::endl;
   // initialize calibTable
-  fcn.initCalibTable(calibtable_in);
+  fcn.initCalibTable(calibtable_in.c_str());
   
   if (debug>0) std::cout << " Step 1: Initialize CalibTableRef overall " << std::endl;
   // initialize calibTableRef
-  fcn.initCalibTableRef(calibtable_ref);
+  fcn.initCalibTableRef(calibtable_ref.c_str());
   
   // define the parameters
   MnUserParameters pars;
@@ -567,7 +538,7 @@ int main(int argc, char* argv[])
   {
     if (debug>0) std::cout << " Step 2: Fit cell-by-cell, inside mode 1" << std::endl;
     // but initialize calibTableRef using the full table, for method 2
-    fcn.initCalibTableRef(calibtable_ref);
+    fcn.initCalibTableRef(calibtable_ref.c_str());
     
     // loop over all the cells,
     // select only those events in this cell,
@@ -667,7 +638,7 @@ int main(int argc, char* argv[])
     // still fit one calibC one time, but par[0] = <dC> and only par[1] is the CabliC to be fitted.
     if (debug>0) std::cout << " Step 2: Fit cell-by-cell, inside mode 2" << std::endl;
     // but initialize calibTableRef using the full table, for method 2
-    fcn.initCalibTableRef(calibtable_ref);
+    fcn.initCalibTableRef(calibtable_ref.c_str());
 
     // loop over all the cells,
     // select only those events in this cell,
@@ -785,7 +756,7 @@ int main(int argc, char* argv[])
 
     if (debug>0) std::cout << " Step 2: Fit cell-by-cell, inside mode 3 31 32 33" << std::endl;
     // but initialize calibTableRef using the full table
-    fcn.initCalibTableRef(calibtable_ref);
+    fcn.initCalibTableRef(calibtable_ref.c_str());
 
     // apply eta-scale
     if (mode==31)
@@ -971,7 +942,7 @@ int main(int argc, char* argv[])
 
     if (debug>0) std::cout << " Step 2: Fit cell-by-cell, inside mode 4 or 41" << std::endl;
     // but initialize calibTableRef using the full table
-    fcn.initCalibTableRef(calibtable_ref);
+    fcn.initCalibTableRef(calibtable_ref.c_str());
 
     // eta scale
     if (mode==41)
@@ -1131,11 +1102,11 @@ int main(int argc, char* argv[])
   
   //if (debug>0) std::cout << " Step 3: Check the results, init calibTableRef" << std::endl;
   //// initialize calibTableRef
-  //fcn.initCalibTableRef(calibtable_ref);
+  //fcn.initCalibTableRef(calibtable_ref.c_str());
   
   if (debug>0) std::cout << " Step 3: Check the results, print calibTable" << std::endl;
   // print calibTable
-  fcn.printCalibTable(calibtable_out);
+  fcn.printCalibTable(calibtable_out.c_str());
   
   //// initialize the parameters from from the calibTable in BWGSLikelihoodFCN
   //fcn.initMnUserParametersFromCurrentCalibTable(pars);

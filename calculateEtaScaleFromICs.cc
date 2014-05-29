@@ -8,8 +8,14 @@
 #include <sstream>
 #include "TROOT.h"
 
-const char* _calib_table_file = "calibTable_out_HighEta_ABC_data_EEP.dat";
-const char* _output_etascale_file = "etascale_calculateEtaScaleFromICs_ABC_data_EEP.root";
+const char* _calib_table_file = 
+"calibTable_out_DataHighEta_EEP_withEtaScale_V8Elec_Mode781_Method7_ABC_Data_3_NoHighEtaEEP.dat"
+//"calibTable_out_HighEta_ABC_data_EEP.dat"
+;
+const char* _output_etascale_file = 
+"calculateEtaScaleFromICs_DataHighEta_EEP_withEtaScale_V8Elec_Mode781_Method7_ABC_Data_3_NoHighEtaEEP.root"
+//"etascale_calculateEtaScaleFromICs_ABC_data_EEP.root"
+;
 
 typedef struct
 {

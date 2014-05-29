@@ -1,13 +1,14 @@
 {
-//TFile* file = new TFile("etascaleratio_ABC_inv.root");
 TFile* file = new TFile(
-"fitzeescale_out_D.root"
+"fitzeescale_out_V8Elec_Mode781_Method7_ABC_MC_3.root"
+//"out_V8Elec_mode781_method7_evenodd0_Data_3/fitzeescale_out_V8Elec_Mode781_Method7_ABC_Data_3.root"
+//"fitzeescale_out_D.root"
 //"fitzeescale_out_ABC.root"
 //"fitzeescale_out_ABC_data.root"
 );
 
-//TH1D* h1 = (TH1D*)file->Get("hEtaScaleRatio");
-TH1D* h1 = (TH1D*)file->Get("hEtaScale");
+TH1D* h1 = (TH1D*)file->Get("hEtaScaleRatio");
+//TH1D* h1 = (TH1D*)file->Get("hEtaScale");
 
 
 int EtaRing = -124;

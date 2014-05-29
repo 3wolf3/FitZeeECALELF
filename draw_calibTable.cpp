@@ -1,32 +1,40 @@
+// Author Hengne Li
 
+#include "TROOT.h"
+#include "TFile.h"
+#include "TH1D.h"
+#include "TH2D.h"
+#include "TCanvas.h"
+#include "TAxis.h"
 #include <iostream>
 #include <string>
 #include<sstream>
 #include<fstream>
 
-void draw_calibTable(){
- const char* filename = 
-"calibTable_out_MCHighEta_ABC_EEP_withEtaScale_MC_V8Elec_Mode781_Method7_ABC_MC_3.dat"
-//"calibTable_out_HighEta_D_MC_EEP.dat"
-//"calibTable_out_HighEta_ABCD_empty_EEP.dat"
-//"calibTable_out_HighEta_D_inv_EEP.dat"
-//"calibTable_out_HighEta_ABCD_inv_EEP.dat"
-//"calibTable_out_HighEta_ABCD_EEP.dat"
-//"calibTable_out_HighEta_D_EEP.dat"
-//"calibTable_out_D_2th_P.dat"
-;
- const char* foutname =
-"calibTable_out_MCHighEta_ABC_EEP_withEtaScale_MC_V8Elec_Mode781_Method7_ABC_MC_3.root"
-//"calibTable_out_HighEta_D_MC_EEP.root"
-//"calibTable_out_HighEta_ABCD_empty_EEP.root"
-//"calibTable_out_HighEta_D_inv_EEP.root"
-//"calibTable_out_HighEta_ABCD_inv_EEP.root"
-//"calibTable_out_HighEta_ABCD_EEP.root"
-//"calibTable_out_HighEta_D_EEP.root"
-//"calibTable_out_D_2th_P.root"
-;
- TFile* fout = new TFile(foutname, "recreate");
+
+int main(int argc, char* argv[])
+{
+  if( argc<2 )
+  {
+    std::cout << argv[0] << " calibTable.dat" << std::endl;
+    return 0;
+  }
+ std::string filename(argv[1]);
+
+ std::string foutname = filename.substr(0, filename.find_last_of(".dat")-3) + ".root";
+ std::string foutnameps = filename.substr(0, filename.find_last_of(".dat")-3) + ".ps";
+ std::string foutnamepdf = filename.substr(0, filename.find_last_of(".dat")-3) + ".pdf";
+
+ std::cout << " foutname = " << foutname << std::endl;
+ std::cout << " foutnameps = " << foutnameps << std::endl;
+ std::cout << " foutnamepdf = " << foutnamepdf << std::endl;
+
+ TFile* fout = new TFile(foutname.c_str(), "recreate");
  
+ char name[1000];
+
+ sprintf(name, ".x root_style.C");
+ gROOT->ProcessLine(name);
 
  TH1D* h1d = new TH1D("h1d", "h1d", 100,0.5,1.5);
  TH1D* h1derr = new TH1D("h1derr", "h1derr", 100,0.0,5);
@@ -63,7 +71,6 @@ void draw_calibTable(){
             >> cerr
             >> fixed
             >> nfits ;
-//  if(c>1.00000001||c<0.9999999) continue; // debug
      h2d->SetBinContent(ix, iy, c);
      h2d->SetBinError(ix, iy, cerr);
      h1d->Fill(c);
@@ -72,23 +79,36 @@ void draw_calibTable(){
    myfile.close();
  }
 
-
- TCanvas* c1 = new TCanvas("c1", "c1");
+ TCanvas* plots = new TCanvas("plots", "plots");
+ sprintf(name, "%s[", foutnameps.c_str());
+ plots->Print(name);
+ 
+ plots->Clear();
  h2d->GetZaxis()->SetRangeUser(0.7,1.3);
  h2d->GetXaxis()->SetRangeUser(30, 70);
  h2d->GetYaxis()->SetRangeUser(30, 70);
  h2d->Draw("colz");
+ plots->Print(foutnameps.c_str());
 
- TCanvas* c2 = new TCanvas("c2", "c2");
+ plots->Clear();
  h1d->Draw();
+ plots->Print(foutnameps.c_str());
 
- TCanvas* c3 = new TCanvas("c3", "c3");
+ plots->Clear();
  h1derr->Draw();
+ plots->Print(foutnameps.c_str());
  
+ sprintf(name, "%s]", foutnameps.c_str());
+ plots->Print(name);
+
+ sprintf(name, ".! ps2pdf %s %s", foutnameps.c_str(), foutnamepdf.c_str());  
+ gROOT->ProcessLine(name);
+
  fout->cd();
  h1d->Write();
  h1derr->Write();
  h2d->Write();
  
+ return 1;
 
 }
