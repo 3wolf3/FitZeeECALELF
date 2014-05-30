@@ -226,7 +226,7 @@ public:
           debug, method);
 
     _RawSCE1 = RawSCE1;
-    _RawSCE1 = RawSCE1;
+    _RawSCE2 = RawSCE2;
 
   }
 
@@ -317,7 +317,7 @@ public:
           debug, method);
 
     _RawSCE1 = RawSCE1;
-    _RawSCE1 = RawSCE1;
+    _RawSCE2 = RawSCE2;
 
   }
 
@@ -1471,7 +1471,7 @@ public:
         // keep the regression energy scale
         double RegScale1 = EReg1/E1;
         double RegScale2 = EReg2/E2;
- 
+
         // get recaculated new Raw Energy        
         double NewRawE1 = *(_RawSCE1.at(i));
         double NewRawE2 = *(_RawSCE2.at(i));
@@ -1480,7 +1480,7 @@ public:
         if(_ScaleBin1.at(i)>=0) NewRawE1 *= par.at(_ScaleBin1.at(i));
         if(_ScaleBin2.at(i)>=0) NewRawE2 *= par.at(_ScaleBin2.at(i));
 
-        //std::cout << "method 7: _ScaleBin1.at(i) = " << _ScaleBin1.at(i)
+        //std::cout << "method 7820: _ScaleBin1.at(i) = " << _ScaleBin1.at(i)
         //             << "; _ScaleBin2.at(i) = " << _ScaleBin2.at(i) << std::endl;
         // energy after energy scale
         E1 = RegScale1 * NewRawE1;

@@ -113,7 +113,10 @@ int main(int argc, char* argv[])
   
   if (mode==782) 
   { 
-    calibtable_filename = steer.getString("calibtable_filename"); 
+    calibtable_filename = steer.getString("calibtable_filename");
+    // fitscale is a stupid control to tell FillAllEvent 
+    // if you want it to store all hits information, false is to store.
+    fitscale = false; 
   }
  
   std::cout << argv[0] << std::endl;
@@ -133,16 +136,19 @@ int main(int argc, char* argv[])
   // reading data
   TChain* tree = new TChain("selected", "selected");
   tree->Add(rootfile_in.c_str());
+  // Set the branches for the TChain/TTree
+  SetTreeBranch(tree);
 
   // reading extra tree
   TChain* extree = new TChain("extraCalibTree", "extraCalibTree");
   extree->Add(rootfile_in.c_str());
+  // Set the branches for the extra TTree
+  SetExtraTreeBranch(extree);
   
   // output root file
   TFile* fout = new TFile(rootfile_out.c_str(), "recreate");
   
-  // Set the branches for the TChain/TTree
-  SetTreeBranch(tree);
+
 
   // all events
   nEvents = tree->GetEntries();
@@ -1337,8 +1343,8 @@ int main(int argc, char* argv[])
     FunctionMinimum min = migrad();
 
     // print min
-    std::cout << "minimum of E-scale of EtaBin : \n"
-    << min << std::endl;
+    //std::cout << "minimum of E-scale of EtaBin : \n"
+    //<< min << std::endl;
 
     //if (debug>0) std::cout << " Step 2.1: hesse estimation of uncertainties " << std::endl;
     // hesse
@@ -1348,6 +1354,13 @@ int main(int argc, char* argv[])
     if (debug>0) std::cout << " Step 2.1: get parameters " << std::endl;
     // get parmeters
     Apars = min.UserParameters();
+   
+    // print 2.1 results:
+    for (int ibin=0; ibin<(int)Apars.Params().size(); ibin++)
+    { 
+       std::cout << Apars.GetName(ibin) << " : " << Apars.Value(ibin) << " +/- " << Apars.Error(ibin) << std::endl;
+    }
+
 
     // get back the fitted parameters to EtaScale;
     for (int ibin=0; ibin<(int)EtaScale.size(); ibin++)

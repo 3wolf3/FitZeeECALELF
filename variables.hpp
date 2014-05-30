@@ -516,11 +516,13 @@ void CalculateNewRawSCEnergyForAllEvents(std::map<int, std::map<int, std::map<in
     abort();
   }
 
+  bool doPrint = false;
+
   //loop over all events
   for (int i=0; i<nEventsAll; i++)
   {
-    double NewRawE1(0);
-    double NewRawE2(0);
+    double NewRawE1 = allE1.at(i);
+    double NewRawE2 = allE2.at(i);
 
     for (int ih=0; ih<allnHits1.at(i); ih++)
     {
@@ -528,8 +530,11 @@ void CalculateNewRawSCEnergyForAllEvents(std::map<int, std::map<int, std::map<in
       const int iy = allHitIY1.at(i).at(ih);
       const int iz = allHitIZ1.at(i).at(ih);
       double icc = GetICFromCalibTable(ix, iy, iz, calibTable);
-      double NewE = icc * allHitE1.at(i).at(ih);
-      NewRawE1 += NewE;
+      if (icc>-900) 
+      { 
+        NewRawE1 += (icc - 1.0) * allHitE1.at(i).at(ih);
+        doPrint=true;
+      }
     }
 
     for (int ih=0; ih<allnHits2.at(i); ih++)
@@ -538,12 +543,21 @@ void CalculateNewRawSCEnergyForAllEvents(std::map<int, std::map<int, std::map<in
       const int iy = allHitIY2.at(i).at(ih);
       const int iz = allHitIZ2.at(i).at(ih);
       double icc = GetICFromCalibTable(ix, iy, iz, calibTable);
-      double NewE = icc * allHitE2.at(i).at(ih);
-      NewRawE2 += NewE;
+      if (icc>-900)
+      {
+        NewRawE2 += (icc - 1.0) * allHitE2.at(i).at(ih);
+        doPrint=true;
+      }
     }
 
-    allRawSCE1.push_back(NewRawE1 + allRawESE1.at(i));
-    allRawSCE2.push_back(NewRawE2 + allRawESE2.at(i));
+    if (doPrint)
+    {
+    //  std::cout << "RawE1 = " << allE1.at(i) << " NewRawE1 = " << NewRawE1 << std::endl;
+    //  std::cout << "RawE2 = " << allE2.at(i) << " NewRawE2 = " << NewRawE2 << std::endl;
+    }
+
+    allRawSCE1.push_back(NewRawE1);
+    allRawSCE2.push_back(NewRawE2);
     
   }
 
@@ -1397,7 +1411,7 @@ int SelectEventsForEtaScaleFits(std::string Combine="", int max_events = -1)
     UseEle2.push_back(true);
  
     // stop storing events if reached the max events
-    if ( max_events!=-1 && i<=max_events) break;
+    if ( max_events!=-1 && i>max_events) break;
 
   }
 
