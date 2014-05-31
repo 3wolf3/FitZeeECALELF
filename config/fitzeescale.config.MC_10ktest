@@ -28,4 +28,7 @@ int debug  1
 int doEvenOdd  0
 
 // eta-scale reference file, only for mode = 73, 75, 77 
-string parfile_ref  
+string parfile_ref 
+
+// input calib ICs applied before deriving the Eta-Scale, only used for mode 782
+string calibtable_filename calibTable_out_MCHighEta_AB_withEtaScale_MC_V8Elec_Mode781_Method7_AB_MC_3.dat 

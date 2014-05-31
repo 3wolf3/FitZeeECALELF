@@ -1285,6 +1285,13 @@ int SelectEventsInOneScaleBin(int scale_bin, std::string Combine="")
   ScaleBin2.clear();
   UseEle2.clear();
 
+  // protection against not existing vectors
+  bool store_it = false;
+  if(allE1.size()==allRawSCE1.size())
+  {
+    store_it = true;
+  }
+
   // loop over all events and select events
   for (int i=0; i<nEventsAll; i++)
   {
@@ -1324,14 +1331,14 @@ int SelectEventsInOneScaleBin(int scale_bin, std::string Combine="")
     // if not continue above, it is a useful event to use
     E1.push_back(&(allE1.at(i)));
     EReg1.push_back(&(allEReg1.at(i)));
-    RawSCE1.push_back(&(allRawSCE1.at(i)));
+    if (store_it) RawSCE1.push_back(&(allRawSCE1.at(i)));
     Eta1.push_back(&(allEta1.at(i)));
     Phi1.push_back(&(allPhi1.at(i)));
     ScaleBin1.push_back(allScaleBin1.at(i));
     UseEle1.push_back(takeEle1);
     E2.push_back(&(allE2.at(i)));
     EReg2.push_back(&(allEReg2.at(i)));
-    RawSCE2.push_back(&(allRawSCE2.at(i)));
+    if (store_it) RawSCE2.push_back(&(allRawSCE2.at(i)));
     Eta2.push_back(&(allEta2.at(i)));
     Phi2.push_back(&(allPhi2.at(i)));
     ScaleBin2.push_back(allScaleBin2.at(i));
@@ -1369,6 +1376,13 @@ int SelectEventsForEtaScaleFits(std::string Combine="", int max_events = -1)
   ScaleBin2.clear();
   UseEle2.clear();
 
+  // protection against not existing vectors
+  bool store_it = false;
+  if(allE1.size()==allRawSCE1.size())
+  {
+    store_it = true;
+  }
+
   // loop over all events and select events
   for (int i=0; i<nEventsAll; i++)
   {
@@ -1397,14 +1411,14 @@ int SelectEventsForEtaScaleFits(std::string Combine="", int max_events = -1)
 
     E1.push_back(&(allE1.at(i)));
     EReg1.push_back(&(allEReg1.at(i)));
-    RawSCE1.push_back(&(allRawSCE1.at(i)));
+    if (store_it) RawSCE1.push_back(&(allRawSCE1.at(i)));
     Eta1.push_back(&(allEta1.at(i)));
     Phi1.push_back(&(allPhi1.at(i)));
     ScaleBin1.push_back(allScaleBin1.at(i));
     UseEle1.push_back(true);
     E2.push_back(&(allE2.at(i)));
     EReg2.push_back(&(allEReg2.at(i)));
-    RawSCE2.push_back(&(allRawSCE2.at(i)));
+    if (store_it) RawSCE2.push_back(&(allRawSCE2.at(i)));
     Eta2.push_back(&(allEta2.at(i)));
     Phi2.push_back(&(allPhi2.at(i)));
     ScaleBin2.push_back(allScaleBin2.at(i));

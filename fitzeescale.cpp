@@ -1024,7 +1024,8 @@ int main(int argc, char* argv[])
     if (debug>0) std::cout << "Step 2.1.) do a fit using at most 10k events, to fit all the Eta-Rings in one step." << std::endl;
 
     // give eta-bin numbers for 10k events
-    nEvents = AddEtaBinNumberToElectrons(EtaScale, _combine, 10000);
+    nEvents = SelectEventsForEtaScaleFits(_combine, 10000);
+
 
     // define the signal fraction
     nSignals = int(signalFraction*(double)nEvents);
@@ -1065,8 +1066,8 @@ int main(int argc, char* argv[])
     FunctionMinimum min = migrad();
 
     // print min
-    std::cout << "minimum of E-scale of EtaBin : \n"
-    << min << std::endl;
+    //std::cout << "minimum of E-scale of EtaBin : \n"
+    //<< min << std::endl;
 
     //if (debug>0) std::cout << " Step 2.1: hesse estimation of uncertainties " << std::endl;
     // hesse
@@ -1076,6 +1077,12 @@ int main(int argc, char* argv[])
     if (debug>0) std::cout << " Step 2.1: get parameters " << std::endl;
     // get parmeters
     Apars = min.UserParameters();
+
+    // print 2.1 results:
+    for (int ibin=0; ibin<(int)Apars.Params().size(); ibin++)
+    {
+       std::cout << Apars.GetName(ibin) << " : " << Apars.Value(ibin) << " +/- " << Apars.Error(ibin) << std::endl;
+    }
 
     // get back the fitted parameters to EtaScale;
     for (int ibin=0; ibin<(int)EtaScale.size(); ibin++)
@@ -1182,7 +1189,7 @@ int main(int argc, char* argv[])
     if (debug>0) std::cout << "Step 2.3.) reinitialize the data and check the results" << std::endl;
 
     // give eta-bin numbers to events
-    nEvents = AddEtaBinNumberToElectrons(EtaScale, _combine);
+    nEvents = SelectEventsForEtaScaleFits(_combine);
 
     // define the signal fraction
     nSignals = int(signalFraction*(double)nEvents);
