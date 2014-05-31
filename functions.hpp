@@ -1428,9 +1428,11 @@ public:
         if (_UseEle2.at(i)) EReg2 *= par.at(0);
 
         //if (_debug>0) std::cout << "functions.h :: Method 61 energy after energy scale" << std::endl;
-        // energy after energy scale
-        E1 = EReg1;
-        E2 = EReg2;
+        // energy after energy scale, the if protection is important here, 
+        // it avoids the already eta-scaled EReg (in E1 and E2) being 
+        // flushed by the original EReg when the eta-ring is not to be fitted.  
+        if (_UseEle1.at(i)) E1 = EReg1;
+        if (_UseEle2.at(i)) E2 = EReg2;
 
       }
       else if (method==7)

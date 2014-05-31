@@ -1958,7 +1958,7 @@ void ApplyEtaRingEtaScaleToAllEventsABCD(const std::vector<EtaRingEnergyScale>& 
 }
 //////////////////
 
-void ApplyEtaRingEtaScaleToSelectedEvents(const std::vector<EtaRingEnergyScale>& EtaScale)
+void ApplyEtaRingEtaScaleToSelectedEvents(const std::vector<EtaRingEnergyScale>& EtaScale, const int ibin=-1 )
 {
   // this function modifies the E1 and E2 vectors to use them store the (REgression Energy * Eta Scale).
   // check if there are selected events
@@ -1976,9 +1976,9 @@ void ApplyEtaRingEtaScaleToSelectedEvents(const std::vector<EtaRingEnergyScale>&
     *(E1.at(i)) = *(EReg1.at(i));
     *(E2.at(i)) = *(EReg2.at(i));
 
-    // apply eta scale
-    if (ScaleBin1.at(i)>=0.) (*(E1.at(i))) *= EtaScale.at( ScaleBin1.at(i) ).s;
-    if (ScaleBin2.at(i)>=0.) (*(E2.at(i))) *= EtaScale.at( ScaleBin2.at(i) ).s;
+    // apply eta scale, except the ibin that being fitted
+    if (ScaleBin1.at(i)>=0.&&ScaleBin1.at(i)!=ibin) (*(E1.at(i))) *= EtaScale.at( ScaleBin1.at(i) ).s;
+    if (ScaleBin2.at(i)>=0.&&ScaleBin2.at(i)!=ibin) (*(E2.at(i))) *= EtaScale.at( ScaleBin2.at(i) ).s;
 
   }
 
