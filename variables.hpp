@@ -1966,15 +1966,17 @@ void ApplyEtaRingEtaScaleToSelectedEvents(const std::vector<EtaRingEnergyScale>&
   if (nevents<=0) 
   {
     std::cout << "ApplyEtaRingEtaScaleToSelectedEvents:: No selected events ." << std::endl;
-    return;
+    abort();
   }
   
   // loop over all events
   for (int i=0; i<nevents; i++)
   {
+    // "if" protection below makes sure that the changing of E1 and E2 to store the eta-scaled EReg only 
+    //     happens to the eta-rings that not to be fitted this time.  
     // at least be the Reg Energy
-    *(E1.at(i)) = *(EReg1.at(i));
-    *(E2.at(i)) = *(EReg2.at(i));
+    if (ScaleBin1.at(i)>=0.&&ScaleBin1.at(i)!=ibin) *(E1.at(i)) = *(EReg1.at(i));
+    if (ScaleBin2.at(i)>=0.&&ScaleBin2.at(i)!=ibin) *(E2.at(i)) = *(EReg2.at(i));
 
     // apply eta scale, except the ibin that being fitted
     if (ScaleBin1.at(i)>=0.&&ScaleBin1.at(i)!=ibin) (*(E1.at(i))) *= EtaScale.at( ScaleBin1.at(i) ).s;
@@ -1983,6 +1985,56 @@ void ApplyEtaRingEtaScaleToSelectedEvents(const std::vector<EtaRingEnergyScale>&
   }
 
 }
+
+//////////////////
+
+void ApplyEtaRingEtaScaleToSelectedEventsWithNewICs(const std::vector<EtaRingEnergyScale>& EtaScale, const int ibin=-1 )
+{
+  // this function modifies the E1 and E2 vectors to use them store : 
+  // Enew = Ereg/ErawOld * ErawNew * EtaScale
+  //    where the ErawNew is recalculated from the SC hits after applying the New ICs.
+
+  // check if there are selected events
+  int nevents = (int)E1.size();
+  if (nevents<=0)
+  {
+    std::cout << "ApplyEtaRingEtaScaleToSelectedEventsWithNewICs:: No selected events ." << std::endl;
+    abort();
+  }
+
+  // check if the New ICs are applied
+  if (nevents != (int)RawSCE1.size() ) 
+  {
+    std::cout << "ApplyEtaRingEtaScaleToSelectedEventsWithNewICs:: raw ICs are not applied correctly ." << std::endl;
+    abort();
+  }
+
+  // loop over all events
+  for (int i=0; i<nevents; i++)
+  {
+    // "if" protection below makes sure that the changing of E1 and E2 to store the eta-scaled EReg only
+    //     happens to the eta-rings that not to be fitted this time.
+    
+    // ele1
+    if (ScaleBin1.at(i)>=0.&&ScaleBin1.at(i)!=ibin)
+    {
+      double RegScale = *(EReg1.at(i)) / *(E1.at(i));
+      double NewEraw = *(RawSCE1.at(i));
+      (*(E1.at(i))) = RegScale * NewEraw * EtaScale.at( ScaleBin1.at(i) ).s;
+    }
+
+    // ele2
+    if (ScaleBin2.at(i)>=0.&&ScaleBin2.at(i)!=ibin)
+    {
+      double RegScale = *(EReg2.at(i)) / *(E2.at(i));
+      double NewEraw = *(RawSCE2.at(i));
+      (*(E2.at(i))) = RegScale * NewEraw * EtaScale.at( ScaleBin2.at(i) ).s;
+    }
+
+  }
+
+}
+
 
 
 ///////////

@@ -1501,9 +1501,9 @@ public:
         //   otherwise, use E1 or E2. And EReg1/2 store the original Regression Energy, but E1 E2 store the Regression
         //   Energy times the previously fitted Eta-Scales.
 
-        //if (_debug>0) std::cout << "functions.h :: Method 61 " << std::endl;
+        //if (_debug>0) std::cout << "functions.h :: Method 7821 " << std::endl;
 
-        //if (_debug>0) std::cout << "functions.h :: Method 61 regression energy" << std::endl;
+        //if (_debug>0) std::cout << "functions.h :: Method 7821 regression energy" << std::endl;
         // regression energy
         double EReg1 = *(_EReg1.at(i));
         double EReg2 = *(_EReg2.at(i));
@@ -1516,15 +1516,18 @@ public:
         double NewRawE1 = *(_RawSCE1.at(i));
         double NewRawE2 = *(_RawSCE2.at(i));
 
-        //if (_debug>0) std::cout << "functions.h :: Method 61 apply energy scale" << std::endl;
+        //if (_debug>0) std::cout << "functions.h :: Method 7821 apply energy scale" << std::endl;
         // apply energy scale
         if (_UseEle1.at(i)) NewRawE1 *= par.at(0);
         if (_UseEle2.at(i)) NewRawE2 *= par.at(0);
 
-        //if (_debug>0) std::cout << "functions.h :: Method 61 energy after energy scale" << std::endl;
+        //if (_debug>0) std::cout << "functions.h :: Method 7821 energy after energy scale" << std::endl;
         // energy after energy scale
-        E1 = RegScale1 * NewRawE1;
-        E2 = RegScale2 * NewRawE2;
+        //   note: this "if (_UseEle1.at(i))" protetion is important here, because it is not the one to 
+        //   be fitted, its E1 or E2 has already been change to the energy applied the EtaScale and New ICs.
+        //    if you dont protect, it will be modified back to the one without applying the EtaScale.
+        if (_UseEle1.at(i)) E1 = RegScale1 * NewRawE1;
+        if (_UseEle2.at(i)) E2 = RegScale2 * NewRawE2;
 
       }      
       else if (method==8)

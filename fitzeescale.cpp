@@ -1405,7 +1405,7 @@ int main(int argc, char* argv[])
 
         if (debug>0) std::cout << " Step 2.2, iIter " << iIter << ", ibin " << ibin << ": apply previously fitted EtaScale to selected events." << std::endl;
         // apply previously fitted EtaScale to selected events.
-        ApplyEtaRingEtaScaleToSelectedEvents(EtaScale, ibin);
+        ApplyEtaRingEtaScaleToSelectedEventsWithNewICs(EtaScale, ibin);
 
         if (debug>0) std::cout << " Step 2.2, iIter " << iIter << ", ibin " << ibin << ": init data and parameters " << std::endl;
 
