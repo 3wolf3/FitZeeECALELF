@@ -143,7 +143,7 @@ int main(int argc, char* argv[])
   }
 
   std::string _calib_table_file(argv[1]);
-  std::string _output_etascale_file = _calib_table_file.substr(0, _calib_table_file.find_last_of(".dat")-3) + ".root";
+  std::string _output_etascale_file = "calculateEtaScaleFromICs_" + _calib_table_file.substr(0, _calib_table_file.find_last_of(".dat")-3) + ".root";
 
   // init eta-ring
   initEEEtaRingTable();
