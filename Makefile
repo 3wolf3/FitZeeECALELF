@@ -15,7 +15,14 @@ LIBS = $(ROOTLIBS) -L.
 
 CC = g++ 
 
-all: fitzeescale.exe fitzee.exe copyTree.exe drawMee.exe draw_calibTable.exe 
+all: fitzeescale.exe fitzee.exe copyTree.exe drawMee.exe draw_calibTable.exe calculateEtaScaleFromICs.exe 
+
+
+calculateEtaScaleFromICs.exe: calculateEtaScaleFromICs.o
+	$(CC) calculateEtaScaleFromICs.o -o calculateEtaScaleFromICs.exe $(CFLAGS) $(LIBS)
+
+calculateEtaScaleFromICs.o: calculateEtaScaleFromICs.cpp
+	$(CC) -c calculateEtaScaleFromICs.cpp -o calculateEtaScaleFromICs.o $(CFLAGS)
 
 draw_calibTable.exe: draw_calibTable.o 
 	$(CC) draw_calibTable.o -o draw_calibTable.exe $(CFLAGS) $(LIBS)

@@ -8,14 +8,6 @@
 #include <sstream>
 #include "TROOT.h"
 
-const char* _calib_table_file = 
-"calibTable_out_DataHighEta_EEP_withEtaScale_V8Elec_Mode781_Method7_ABC_Data_3_NoHighEtaEEP.dat"
-//"calibTable_out_HighEta_ABC_data_EEP.dat"
-;
-const char* _output_etascale_file = 
-"calculateEtaScaleFromICs_DataHighEta_EEP_withEtaScale_V8Elec_Mode781_Method7_ABC_Data_3_NoHighEtaEEP.root"
-//"etascale_calculateEtaScaleFromICs_ABC_data_EEP.root"
-;
 
 typedef struct
 {
@@ -142,14 +134,22 @@ void initEtaRingEtaScale()
     }
 }
 
-int main()
+int main(int argc, char* argv[])
 {
+  if( argc<2 )
+  {
+    std::cout << argv[0] << " calibTable.dat" << std::endl;
+    return 0;
+  }
+
+  std::string _calib_table_file(argv[1]);
+  std::string _output_etascale_file = _calib_table_file.substr(0, _calib_table_file.find_last_of(".dat")-3) + ".root";
 
   // init eta-ring
   initEEEtaRingTable();
 
   // init calib table
-  initCalibTable(_calib_table_file);
+  initCalibTable(_calib_table_file.c_str());
   
   // etaring etascale
   initEtaRingEtaScale();   
@@ -202,7 +202,7 @@ int main()
   }
 
 
-  TFile* file = new TFile(_output_etascale_file, "recreate");
+  TFile* file = new TFile(_output_etascale_file.c_str(), "recreate");
 
   double histBins[1000];
   for (int ibin=0; ibin<(int)EtaScale.size(); ibin++)
