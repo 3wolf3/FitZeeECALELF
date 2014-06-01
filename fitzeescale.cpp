@@ -1296,6 +1296,22 @@ int main(int argc, char* argv[])
     // get the calibTable
     std::map<int, std::map<int, std::map<int, calibRecord> > > calibTable = GetCalibTableMapFromFile( calibtable_filename.c_str() );
 
+    // check calibTable
+    if (debug>1) 
+    {
+       std::cout << "DEBUG:: Check calibTable: " << std::endl;
+       for (std::map<int, std::map<int, std::map<int, calibRecord> > >::iterator iitx = calibTable.begin(); iitx!=calibTable.end(); ++iitx)
+       {
+         for (std::map<int, std::map<int, calibRecord> >::iterator iity = iitx->second.begin(); iity!=iitx->second.end(); ++iity)
+         {
+           for (std::map<int, calibRecord>::iterator iitz = iity->second.begin(); iitz!=iity->second.end(); ++iitz)
+           {
+             calibRecord rc = iitz->second;
+             std::cout << "(" << rc.ix << "," << rc.iy << "," << rc.iz << "): c = " << rc.c << " +/- " << rc.cerr << std::endl;
+           }
+         } 
+       }
+    }
     // calculate new SC raw energies for all events
     CalculateNewRawSCEnergyForAllEvents(calibTable);
 

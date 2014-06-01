@@ -399,6 +399,9 @@ void FillAllEvents(TChain* tree, TChain* extree, const int debug=0, const std::s
     if (doEvenOdd==1 && eventNumber%2==0) continue;
     else if (doEvenOdd==2 && eventNumber%2==1) continue;
 
+    // remove track driven electrons
+    if (recoFlagsEle[0]==1||(recoFlagsEle[1]==1&&ZStat==1)) continue; 
+
     allRunNum.push_back(runNumber);
     allEvtNum.push_back(eventNumber);
   
