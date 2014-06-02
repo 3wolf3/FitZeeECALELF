@@ -176,7 +176,7 @@ int main(int argc, char* argv[])
       double cc = _calibTable.at(ic).c;
       double ccerr = _calibTable.at(ic).cerr;
       // 
-      if (cc>0.9999999&&cc<1.0000001) continue;
+      //if (cc>0.9999999&&cc<1.0000001) continue;
 
       sum_err += 1./ccerr/ccerr;
       sum_mean_err += cc/ccerr/ccerr;
