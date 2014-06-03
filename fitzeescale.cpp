@@ -65,7 +65,7 @@ bool fitscale = true;
 int doEvenOdd = 0; // 0 for not to split, 1 for odd, 2 for even
 
 // iteration times in the fit, in case it is needed, e.g. in mode==781, 782
-int Iteration_Times = 2;
+int Iteration_Times = 3;
 
 // reference calibTable
 std::string calibtable_filename;
@@ -1489,7 +1489,7 @@ int main(int argc, char* argv[])
     if (debug>0) std::cout << "Step 2.3.) reinitialize the data and check the results" << std::endl;
 
     // take all events
-    nEvents = SelectEventsForEtaScaleFits(_combine);
+    nEvents = SelectEventsForEtaScaleFits(_combine, 100000);
 
     // define the signal fraction
     nSignals = int(signalFraction*(double)nEvents);
