@@ -1486,24 +1486,26 @@ int main(int argc, char* argv[])
     // pass the "Apars" to "scales"
     scales = Apars;
 
-    if (debug>0) std::cout << "Step 2.3.) reinitialize the data and check the results" << std::endl;
+    if (debug>1)
+    {
+      std::cout << "Step 2.3.) reinitialize the data and check the results" << std::endl;
 
-    // take all events
-    nEvents = SelectEventsForEtaScaleFits(_combine, 100000);
+      // take all events
+      nEvents = SelectEventsForEtaScaleFits(_combine);
 
-    // define the signal fraction
-    nSignals = int(signalFraction*(double)nEvents);
+      // define the signal fraction
+      nSignals = int(signalFraction*(double)nEvents);
 
-    if (debug>0) std::cout << " Step 2.3: init data and pars : nEvents = " << nEvents << std::endl;
+      std::cout << " Step 2.3: init data and pars : nEvents = " << nEvents << std::endl;
 
-    // initialize fcn using this set of events
-    fcn.initDataScale(nEvents, nSignals,
-                   E1, EReg1, ERegScale1, RawSCE1, Eta1, Phi1, ScaleBin1,
-                   E2, EReg2, ERegScale2, RawSCE2, Eta2, Phi2, ScaleBin2,
-                   debug, 7820);
+      // initialize fcn using this set of events
+      fcn.initDataScale(nEvents, nSignals,
+                     E1, EReg1, ERegScale1, RawSCE1, Eta1, Phi1, ScaleBin1,
+                     E2, EReg2, ERegScale2, RawSCE2, Eta2, Phi2, ScaleBin2,
+                     debug, 7820);
 
-    // initialize PDF
-    fcn.initBWGSParameters(_FitWindowHigh, // windowHigh
+      // initialize PDF
+      fcn.initBWGSParameters(_FitWindowHigh, // windowHigh
                              _FitWindowLow, // windowLow
                              _Zmass, //voigtMass
                              gaus_reso, //voightResolution
@@ -1512,8 +1514,6 @@ int main(int argc, char* argv[])
                              nEvents);
 
     //
-    if (debug>0)
-    {
       // print scan parameter
       // plot
       MnPlot plot;
