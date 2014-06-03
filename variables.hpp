@@ -1376,6 +1376,7 @@ int SelectEventsForEtaScaleFits(std::string Combine="", int max_events = -1)
   nSignals = 0;
   E1.clear();
   EReg1.clear();
+  ERegScale1.clear();
   RawSCE1.clear();
   Eta1.clear();
   ScaleBin1.clear();
@@ -1383,6 +1384,7 @@ int SelectEventsForEtaScaleFits(std::string Combine="", int max_events = -1)
   Phi1.clear();
   E2.clear();
   EReg2.clear();
+  ERegScale2.clear();
   RawSCE2.clear();
   Eta2.clear();
   Phi2.clear();
@@ -1426,6 +1428,7 @@ int SelectEventsForEtaScaleFits(std::string Combine="", int max_events = -1)
 
     E1.push_back(&(allE1.at(i)));
     EReg1.push_back(&(allEReg1.at(i)));
+    ERegScale1.push_back(&(allERegScale1.at(i)));
     if (store_it) RawSCE1.push_back(&(allRawSCE1.at(i)));
     Eta1.push_back(&(allEta1.at(i)));
     Phi1.push_back(&(allPhi1.at(i)));
@@ -1433,6 +1436,7 @@ int SelectEventsForEtaScaleFits(std::string Combine="", int max_events = -1)
     UseEle1.push_back(true);
     E2.push_back(&(allE2.at(i)));
     EReg2.push_back(&(allEReg2.at(i)));
+    ERegScale2.push_back(&(allERegScale2.at(i)));
     if (store_it) RawSCE2.push_back(&(allRawSCE2.at(i)));
     Eta2.push_back(&(allEta2.at(i)));
     Phi2.push_back(&(allPhi2.at(i)));
@@ -1852,8 +1856,8 @@ void ApplyEtaScaleToAllEvents(const std::vector<EnergyScale>& EtaScale)
     }
 
     // apply eta scale
-    if (ScaleBin1.at(i)>=0) allEReg1.at(i) *= EtaScale.at(ScaleBin1.at(i)).s;
-    if (ScaleBin2.at(i)>=0) allEReg2.at(i) *= EtaScale.at(ScaleBin2.at(i)).s;
+    if (bin1>=0) allEReg1.at(i) *= EtaScale.at(bin1).s;
+    if (bin2>=0) allEReg2.at(i) *= EtaScale.at(bin2).s;
 
   }
 
@@ -2031,19 +2035,19 @@ void ApplyEtaRingEtaScaleToAllEventsWithNewICs(const std::vector<EtaRingEnergySc
     //     happens to the eta-rings that not to be fitted this time.
     
     // ele1
-    if (ScaleBin1.at(i)>=0.)
+    if (allScaleBin1.at(i)>=0.)
     {
       double RegScale = allERegScale1.at(i); 
       double NewEraw = allRawSCE1.at(i);
-      allE1.at(i) = RegScale * NewEraw * EtaScale.at( ScaleBin1.at(i) ).s;
+      allE1.at(i) = RegScale * NewEraw * EtaScale.at( allScaleBin1.at(i) ).s;
     }
 
     // ele2
-    if (ScaleBin2.at(i)>=0.)
+    if (allScaleBin2.at(i)>=0.)
     {
       double RegScale = allERegScale2.at(i);
       double NewEraw = allRawSCE2.at(i);
-      allE2.at(i) = RegScale * NewEraw * EtaScale.at( ScaleBin2.at(i) ).s;
+      allE2.at(i) = RegScale * NewEraw * EtaScale.at( allScaleBin2.at(i) ).s;
     }
 
   }

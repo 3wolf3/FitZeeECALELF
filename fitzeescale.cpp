@@ -65,7 +65,7 @@ bool fitscale = true;
 int doEvenOdd = 0; // 0 for not to split, 1 for odd, 2 for even
 
 // iteration times in the fit, in case it is needed, e.g. in mode==781, 782
-int Iteration_Times = 0;
+int Iteration_Times = 2;
 
 // reference calibTable
 std::string calibtable_filename;
@@ -850,8 +850,8 @@ int main(int argc, char* argv[])
         histBins[ibin+1] = EtaScale.at(ibin).max;
       }
     }
-
-
+        
+        
     TH1D* hist = new TH1D("hEtaScale", "hEtaScale", (int)EtaScale.size(), histBins);
     hist->Sumw2();
     hist->SetMarkerStyle(20);
@@ -1325,7 +1325,7 @@ int main(int argc, char* argv[])
     if (debug>0) std::cout << "Step 2.1.) do a fit using at most 10k events, to fit all the Eta-Rings in one step." << std::endl;
 
     //  select 10k events for the first fits
-    nEvents = SelectEventsForEtaScaleFits(_combine, 100000);
+    nEvents = SelectEventsForEtaScaleFits(_combine, 10000);
 
     // define the signal fraction
     nSignals = int(signalFraction*(double)nEvents);
@@ -1334,8 +1334,8 @@ int main(int argc, char* argv[])
 
     // initialize fcn using this set of events
     fcn.initDataScale(nEvents, nSignals,
-                   E1, EReg1, RawSCE1, Eta1, Phi1, ScaleBin1,
-                   E2, EReg2, RawSCE2, Eta2, Phi2, ScaleBin2,
+                   E1, EReg1, ERegScale1, RawSCE1, Eta1, Phi1, ScaleBin1,
+                   E2, EReg2, ERegScale2, RawSCE2, Eta2, Phi2, ScaleBin2,
                    debug, 7820); // use hard coded dedicated method
 
     // initialize PDF
@@ -1498,8 +1498,8 @@ int main(int argc, char* argv[])
 
     // initialize fcn using this set of events
     fcn.initDataScale(nEvents, nSignals,
-                   E1, EReg1, RawSCE1, Eta1, Phi1, ScaleBin1,
-                   E2, EReg2, RawSCE2, Eta2, Phi2, ScaleBin2,
+                   E1, EReg1, ERegScale1, RawSCE1, Eta1, Phi1, ScaleBin1,
+                   E2, EReg2, ERegScale2, RawSCE2, Eta2, Phi2, ScaleBin2,
                    debug, 7820);
 
     // initialize PDF
@@ -1512,7 +1512,7 @@ int main(int argc, char* argv[])
                              nEvents);
 
     //
-    if (debug>1)
+    if (debug>0)
     {
       // print scan parameter
       // plot
