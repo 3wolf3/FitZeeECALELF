@@ -89,6 +89,7 @@ std::vector<double> allRawEEcal1, allRawEEcal2;
 std::vector<int> allScaleBin1, allScaleBin2;
 std::vector<double> allRawSCE1, allRawSCE2;
 std::vector<double> allRawESE1, allRawESE2;
+std::vector<double> allERegScale1, allERegScale2;
 
 // store selected events
 int nEvents, nSignals;
@@ -105,6 +106,7 @@ std::vector<int*> SeedIX2, SeedIY2, SeedIZ2;
 std::vector<double*> RawEEcal1, RawEEcal2;
 std::vector<double*> RawSCE1, RawSCE2;
 std::vector<double*> RawESE1, RawESE2;
+std::vector<double*> ERegScale1, ERegScale2;
 
 //Declaration of leaves types
    Int_t           runNumber;
@@ -412,6 +414,8 @@ void FillAllEvents(TChain* tree, TChain* extree, const int debug=0, const std::s
     else if(regVersion=="V6Elec") allEReg1.push_back(energySCEle_regrCorrSemiParV6_ele[0]);
     else if(regVersion=="V7Elec") allEReg1.push_back(energySCEle_regrCorrSemiParV7_ele[0]);
     else allEReg1.push_back(energySCEle_regrCorrSemiParV8_ele[0]);    
+
+    allERegScale1.push_back(allEReg1.back()/allE1.back());
     allEta1.push_back(etaEle[0]);
     allPhi1.push_back(phiEle[0]);
     allSCEta1.push_back(etaSCEle[0]);
@@ -450,6 +454,8 @@ void FillAllEvents(TChain* tree, TChain* extree, const int debug=0, const std::s
     else if(regVersion=="V6Elec") allEReg2.push_back(energySCEle_regrCorrSemiParV6_ele[1]);
     else if(regVersion=="V7Elec") allEReg2.push_back(energySCEle_regrCorrSemiParV7_ele[1]);
     else allEReg2.push_back(energySCEle_regrCorrSemiParV8_ele[1]);
+
+    allERegScale2.push_back(allEReg2.back()/allE2.back());
     allEta2.push_back(etaEle[1]);
     allPhi2.push_back(phiEle[1]);
     allSCEta2.push_back(etaSCEle[1]);
@@ -1275,6 +1281,7 @@ int SelectEventsInOneScaleBin(int scale_bin, std::string Combine="")
   nSignals = 0;
   E1.clear();
   EReg1.clear();
+  ERegScale1.clear();
   RawSCE1.clear();
   Eta1.clear();
   ScaleBin1.clear();
@@ -1282,6 +1289,7 @@ int SelectEventsInOneScaleBin(int scale_bin, std::string Combine="")
   Phi1.clear();
   E2.clear();
   EReg2.clear();
+  ERegScale2.clear();
   RawSCE2.clear();
   Eta2.clear();
   Phi2.clear();
@@ -1334,6 +1342,7 @@ int SelectEventsInOneScaleBin(int scale_bin, std::string Combine="")
     // if not continue above, it is a useful event to use
     E1.push_back(&(allE1.at(i)));
     EReg1.push_back(&(allEReg1.at(i)));
+    ERegScale1.push_back(&(allERegScale1.at(i)));
     if (store_it) RawSCE1.push_back(&(allRawSCE1.at(i)));
     Eta1.push_back(&(allEta1.at(i)));
     Phi1.push_back(&(allPhi1.at(i)));
@@ -1341,6 +1350,7 @@ int SelectEventsInOneScaleBin(int scale_bin, std::string Combine="")
     UseEle1.push_back(takeEle1);
     E2.push_back(&(allE2.at(i)));
     EReg2.push_back(&(allEReg2.at(i)));
+    ERegScale2.push_back(&(allERegScale2.at(i)));
     if (store_it) RawSCE2.push_back(&(allRawSCE2.at(i)));
     Eta2.push_back(&(allEta2.at(i)));
     Phi2.push_back(&(allPhi2.at(i)));
@@ -1385,6 +1395,8 @@ int SelectEventsForEtaScaleFits(std::string Combine="", int max_events = -1)
   {
     store_it = true;
   }
+
+  std::cout << "SelectEventsForEtaScaleFits:: store the allRawSCE ? " << store_it << std::endl;
 
   // loop over all events and select events
   for (int i=0; i<nEventsAll; i++)
@@ -1991,24 +2003,24 @@ void ApplyEtaRingEtaScaleToSelectedEvents(const std::vector<EtaRingEnergyScale>&
 
 //////////////////
 
-void ApplyEtaRingEtaScaleToSelectedEventsWithNewICs(const std::vector<EtaRingEnergyScale>& EtaScale, const int ibin=-1 )
+void ApplyEtaRingEtaScaleToAllEventsWithNewICs(const std::vector<EtaRingEnergyScale>& EtaScale)
 {
-  // this function modifies the E1 and E2 vectors to use them store : 
+  // this function modifies the allE1 and allE2 vectors to use them store : 
   // Enew = Ereg/ErawOld * ErawNew * EtaScale
   //    where the ErawNew is recalculated from the SC hits after applying the New ICs.
 
   // check if there are selected events
-  int nevents = (int)E1.size();
+  int nevents = (int)allE1.size();
   if (nevents<=0)
   {
-    std::cout << "ApplyEtaRingEtaScaleToSelectedEventsWithNewICs:: No selected events ." << std::endl;
+    std::cout << "ApplyEtaRingEtaScaleToAllEventsWithNewICs:: No selected events ." << std::endl;
     abort();
   }
 
   // check if the New ICs are applied
-  if (nevents != (int)RawSCE1.size() ) 
+  if (nevents != (int)allRawSCE1.size() ) 
   {
-    std::cout << "ApplyEtaRingEtaScaleToSelectedEventsWithNewICs:: raw ICs are not applied correctly ." << std::endl;
+    std::cout << "ApplyEtaRingEtaScaleToAllEventsWithNewICs:: raw ICs are not applied correctly ." << std::endl;
     abort();
   }
 
@@ -2019,19 +2031,19 @@ void ApplyEtaRingEtaScaleToSelectedEventsWithNewICs(const std::vector<EtaRingEne
     //     happens to the eta-rings that not to be fitted this time.
     
     // ele1
-    if (ScaleBin1.at(i)>=0.&&ScaleBin1.at(i)!=ibin)
+    if (ScaleBin1.at(i)>=0.)
     {
-      double RegScale = *(EReg1.at(i)) / *(E1.at(i));
-      double NewEraw = *(RawSCE1.at(i));
-      (*(E1.at(i))) = RegScale * NewEraw * EtaScale.at( ScaleBin1.at(i) ).s;
+      double RegScale = allERegScale1.at(i); 
+      double NewEraw = allRawSCE1.at(i);
+      allE1.at(i) = RegScale * NewEraw * EtaScale.at( ScaleBin1.at(i) ).s;
     }
 
     // ele2
-    if (ScaleBin2.at(i)>=0.&&ScaleBin2.at(i)!=ibin)
+    if (ScaleBin2.at(i)>=0.)
     {
-      double RegScale = *(EReg2.at(i)) / *(E2.at(i));
-      double NewEraw = *(RawSCE2.at(i));
-      (*(E2.at(i))) = RegScale * NewEraw * EtaScale.at( ScaleBin2.at(i) ).s;
+      double RegScale = allERegScale2.at(i);
+      double NewEraw = allRawSCE2.at(i);
+      allE2.at(i) = RegScale * NewEraw * EtaScale.at( ScaleBin2.at(i) ).s;
     }
 
   }

@@ -64,8 +64,8 @@ bool fitscale = true;
 // even or odd events
 int doEvenOdd = 0; // 0 for not to split, 1 for odd, 2 for even
 
-// iteration times in the fit, in case it is needed, e.g. in mode==781
-int Iteration_Times = 2;
+// iteration times in the fit, in case it is needed, e.g. in mode==781, 782
+int Iteration_Times = 0;
 
 // reference calibTable
 std::string calibtable_filename;
@@ -1325,7 +1325,7 @@ int main(int argc, char* argv[])
     if (debug>0) std::cout << "Step 2.1.) do a fit using at most 10k events, to fit all the Eta-Rings in one step." << std::endl;
 
     //  select 10k events for the first fits
-    nEvents = SelectEventsForEtaScaleFits(_combine, 10000);
+    nEvents = SelectEventsForEtaScaleFits(_combine, 100000);
 
     // define the signal fraction
     nSignals = int(signalFraction*(double)nEvents);
@@ -1408,6 +1408,9 @@ int main(int argc, char* argv[])
 
       std::cout << "   Step 2.2: in Iteration " << iIter << std::endl;
 
+      // apply previously fitted EtaScale to selected events.
+      ApplyEtaRingEtaScaleToAllEventsWithNewICs(EtaScale);
+
       // loop over all EtaScale bins
       for (int ibin=0; ibin<(int)EtaScale.size(); ibin++)
       {
@@ -1419,16 +1422,12 @@ int main(int argc, char* argv[])
         // define the signal fraction
         nSignals = int(signalFraction*(double)nEvents);
 
-        if (debug>0) std::cout << " Step 2.2, iIter " << iIter << ", ibin " << ibin << ": apply previously fitted EtaScale to selected events." << std::endl;
-        // apply previously fitted EtaScale to selected events.
-        ApplyEtaRingEtaScaleToSelectedEventsWithNewICs(EtaScale, ibin);
-
         if (debug>0) std::cout << " Step 2.2, iIter " << iIter << ", ibin " << ibin << ": init data and parameters " << std::endl;
 
         // initialize fcn using this set of events
         fcn.initDataScale(nEvents, nSignals,
-                       E1, EReg1, RawSCE1, Eta1, Phi1, UseEle1,
-                       E2, EReg2, RawSCE2, Eta2, Phi2, UseEle2,
+                       E1, EReg1, ERegScale1, RawSCE1, Eta1, Phi1, UseEle1,
+                       E2, EReg2, ERegScale2, RawSCE2, Eta2, Phi2, UseEle2,
                        debug, 7821);
 
         // initialize PDF
@@ -1513,7 +1512,7 @@ int main(int argc, char* argv[])
                              nEvents);
 
     //
-    if (debug>0)
+    if (debug>1)
     {
       // print scan parameter
       // plot
