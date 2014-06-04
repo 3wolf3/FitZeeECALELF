@@ -1,0 +1,18 @@
+#!/bin/sh
+
+cat \
+calibTable_out_HighEta_withEtaScale_V8Elec_Mode781_Method7_Data_AB_EEN.dat \
+calibTable_out_HighEta_withEtaScale_V8Elec_Mode781_Method7_Data_AB_EEP.dat \
+> calibTable_out_HighEta_withEtaScale_V8Elec_Mode781_Method7_Data_AB.dat
+
+cat \
+calibTable_out_HighEta_withEtaScale_V8Elec_Mode781_Method7_Data_C_EEN.dat \
+calibTable_out_HighEta_withEtaScale_V8Elec_Mode781_Method7_Data_C_EEP.dat \
+> calibTable_out_HighEta_withEtaScale_V8Elec_Mode781_Method7_Data_C.dat
+
+cat \
+calibTable_out_HighEta_withEtaScale_V8Elec_Mode781_Method7_Data_D_EEN.dat \
+calibTable_out_HighEta_withEtaScale_V8Elec_Mode781_Method7_Data_D_EEP.dat \
+> calibTable_out_HighEta_withEtaScale_V8Elec_Mode781_Method7_Data_D.dat
+
+
