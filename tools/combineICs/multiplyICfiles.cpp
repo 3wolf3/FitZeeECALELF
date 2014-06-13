@@ -3,9 +3,7 @@
 
 #include <icrecord.hpp>
 #include <iostream>
-#include <string>
 #include <fstream>
-#include <sstream>
 #include <vector>
 #include <map>
 #include <stdio.h>
@@ -29,45 +27,15 @@ int main(int argc, char* argv[])
   std::cout << "IC file2 : " << argv[2] << std::endl;
   std::cout << "Product  : " << argv[3] << std::endl;
 
-  std::ifstream infile1(argv[1]);
-  std::ifstream infile2(argv[2]);
-  std::ofstream outfile(argv[3]);
+  // read in first file to ictable
+  std::vector<icrecord> inictable1 = getVectorICTableFromFile(argv[1]);
 
-  std::vector<icrecord> inictable1;
-  std::map<int, std::map<int, std::map<int, icrecord> > > inictable2;
+  // read in second file to ictable
+  std::map<int, std::map<int, std::map<int, icrecord> > > inictable2 = getMapICTableFromFile(argv[2]);
+
+  // output ic table
   std::vector<icrecord> outictable;
 
-  std::string line;
-  
-  // read in first file
-  if (infile1.is_open())
-  {
-    inictable1.clear();
-    while (getline(infile1,line))
-    {
-      icrecord ic;
-      std::stringstream sline(line);
-      sline >> ic.ix >> ic.iy >> ic.iz >> ic.c >> ic.cerr;
-      inictable1.push_back(ic);
-    }
-    infile1.close();
-  }
-
-  // read in second file
-  if (infile2.is_open())
-  {
-    inictable2.clear();
-    while (getline(infile2,line))
-    {
-      icrecord ic;
-      std::stringstream sline(line);
-      sline >> ic.ix >> ic.iy >> ic.iz >> ic.c >> ic.cerr;
-      inictable2[ic.ix][ic.iy][ic.iz] = ic;
-    }
-    infile2.close();
-  }
- 
-  // check if the two ic
   // make product
   for (int i=0; i<(int)inictable1.size(); i++)
   {
@@ -103,6 +71,7 @@ int main(int argc, char* argv[])
   }
 
   // print to output file
+  std::ofstream outfile(argv[3]);
   if (outfile.is_open())
   {
     for (int i=0; i<(int)outictable.size(); i++)
@@ -114,7 +83,6 @@ int main(int argc, char* argv[])
   }
 
   return 0;
-
 }
 
 
