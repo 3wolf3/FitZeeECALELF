@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
     else
     {
       oic.c = 1.0;
-      oic.cerr = 0.0;
+      oic.cerr = 9999.0;
     }
 
     outictable.push_back(oic);

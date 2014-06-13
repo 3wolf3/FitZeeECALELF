@@ -14,7 +14,13 @@ LIBS = $(ROOTLIBS) -L.
 
 CC = g++ 
 
-all: printxmltotext.exe multiplyICfiles.exe 
+all: printxmltotext.exe multiplyICfiles.exe calEtaScaleFromICfile.exe
+
+calEtaScaleFromICfile.exe: calEtaScaleFromICfile.o
+	$(CC) calEtaScaleFromICfile.o -o calEtaScaleFromICfile.exe $(CFLAGS) $(LIBS)
+
+calEtaScaleFromICfile.o: calEtaScaleFromICfile.cpp
+	$(CC) -c calEtaScaleFromICfile.cpp -o calEtaScaleFromICfile.o $(CFLAGS) 
 
 multiplyICfiles.exe: multiplyICfiles.o
 	$(CC) multiplyICfiles.o -o multiplyICfiles.exe $(CFLAGS) $(LIBS)
