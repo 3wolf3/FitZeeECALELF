@@ -66,8 +66,10 @@ int main(int argc, char* argv[])
 
     if (outfile.is_open())
     {
+      outfile << std::endl;
       outfile << "<EcalFloatCondObjectContainer>" << std::endl;
 
+      outfile << std::endl;
       outfile << "  <EcalCondHeader>" << std::endl;
       outfile << "    <method></method>" << std::endl;
       outfile << "    <version></version>" << std::endl;
@@ -89,6 +91,7 @@ int main(int argc, char* argv[])
         std::stringstream sline(line);
         sline >> ix >> iy >> iz >> ic >> icerr;
 
+        outfile << std::endl;
         outfile << "  <cell ";
         if (iz==0) 
         {
@@ -104,6 +107,7 @@ int main(int argc, char* argv[])
 
       } // while getline
 
+      outfile << std::endl;
       outfile << "</EcalFloatCondObjectContainer>" << std::endl;
 
       infile.close();
