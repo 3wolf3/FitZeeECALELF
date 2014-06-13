@@ -14,8 +14,13 @@ LIBS = $(ROOTLIBS) -L.
 
 CC = g++ 
 
-all: printxmltotext.exe 
+all: printxmltotext.exe multiplyICfiles.exe 
 
+multiplyICfiles.exe: multiplyICfiles.o
+	$(CC) multiplyICfiles.o -o multiplyICfiles.exe $(CFLAGS) $(LIBS)
+
+multiplyICfiles.o: multiplyICfiles.cpp
+	$(CC) -c multiplyICfiles.cpp -o multiplyICfiles.o $(CFLAGS)
 
 printxmltotext.exe: printxmltotext.o
 	$(CC) printxmltotext.o -o printxmltotext.exe $(CFLAGS) $(LIBS)
