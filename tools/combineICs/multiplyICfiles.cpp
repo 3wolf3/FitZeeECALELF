@@ -33,9 +33,9 @@ int main(int argc, char* argv[])
   std::ifstream infile2(argv[2]);
   std::ofstream outfile(argv[3]);
 
-  std::map<int, std::map<int, std::map<int, icrecord> > > inictable1;
+  std::vector<icrecord> inictable1;
   std::map<int, std::map<int, std::map<int, icrecord> > > inictable2;
-  std::map<int, std::map<int, std::map<int, icrecord> > > outictable;
+  std::vector<icrecord> outictable;
 
   std::string line;
   
@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
       icrecord ic;
       std::stringstream sline(line);
       sline >> ic.ix >> ic.iy >> ic.iz >> ic.c >> ic.cerr;
-      inictable1[ic.ix][ic.iy][ic.iz] = ic;
+      inictable1.push_back(ic);
     }
     infile1.close();
   }
@@ -69,62 +69,46 @@ int main(int argc, char* argv[])
  
   // check if the two ic
   // make product
-  std::map<int, std::map<int, std::map<int, icrecord> > >::iterator _it_ix;
-  std::map<int, std::map<int, icrecord> >::iterator _it_iy;
-  std::map<int, icrecord>::iterator _it_iz;
-
-  for (_it_ix=inictable1.begin(); _it_ix!=inictable1.end(); ++_it_ix)
+  for (int i=0; i<(int)inictable1.size(); i++)
   {
-    for (_it_iy = _it_ix->second.begin(); _it_iy != _it_ix->second.end(); ++_it_iy)
+    icrecord ic1 = inictable1.at(i);
+    icrecord ic2 = inictable2[ic1.ix][ic1.iy][ic1.iz];
+    icrecord oic;
+
+    oic.ix = ic1.ix; oic.iy = ic1.iy; oic.iz = ic1.iz;
+
+    if (ic1.c>=0&&ic2.c>=0)
     {
-      for (_it_iz = _it_iy->second.begin(); _it_iz != _it_iy->second.end(); ++_it_iz)
-      {
-        icrecord ic1 = _it_iz->second;
-        icrecord ic2 = inictable2[ic1.ix][ic1.iy][ic1.iz];
-        icrecord oic;
-
-        oic.ix = ic1.ix; oic.iy = ic1.iy; oic.iz = ic1.iz;
-
-        if (ic1.c>=0&&ic2.c>=0)
-        {
-          oic.c = ic1.c * ic2.c;
-          oic.cerr = sqrt(ic2.c*ic2.c*ic1.cerr*ic1.cerr+ic1.c*ic1.c*ic2.cerr*ic2.cerr);
-        }
-        else if (ic1.c>=0&&ic2.c<0) 
-        {
-          oic.c = ic1.c;
-          oic.cerr = ic1.cerr;
-        }
-        else if (ic1.c<0&&ic2.c>=0)
-        {
-          oic.c = ic2.c;
-          oic.cerr = ic2.cerr;
-        }
-        else 
-        {
-          oic.c = 1.0;
-          oic.cerr = 0.0;
-        }
-
-        outictable[oic.ix][oic.iy][oic.iz] = oic;
-      }
+      oic.c = ic1.c * ic2.c;
+      oic.cerr = sqrt(ic2.c*ic2.c*ic1.cerr*ic1.cerr+ic1.c*ic1.c*ic2.cerr*ic2.cerr);
     }
-  }
+    else if (ic1.c>=0&&ic2.c<0)
+    {
+      oic.c = ic1.c;
+      oic.cerr = ic1.cerr;
+    }
+    else if (ic1.c<0&&ic2.c>=0)
+    {
+      oic.c = ic2.c;
+      oic.cerr = ic2.cerr;
+    }
+    else
+    {
+      oic.c = 1.0;
+      oic.cerr = 0.0;
+    }
 
+    outictable.push_back(oic);
+
+  }
 
   // print to output file
   if (outfile.is_open())
   {
-    for (_it_ix=outictable.begin(); _it_ix!=outictable.end(); ++_it_ix)
+    for (int i=0; i<(int)outictable.size(); i++)
     {
-      for (_it_iy = _it_ix->second.begin(); _it_iy != _it_ix->second.end(); ++_it_iy)
-      {
-        for (_it_iz = _it_iy->second.begin(); _it_iz != _it_iy->second.end(); ++_it_iz)
-        {
-          icrecord ic = _it_iz->second;
-          outfile << ic.ix << " " << ic.iy << " " << ic.iz << " " << ic.c << " " << ic.cerr << std::endl;
-        }
-      }
+      icrecord ic = outictable.at(i);
+      outfile << ic.ix << " " << ic.iy << " " << ic.iz << " " << ic.c << " " << ic.cerr << std::endl;
     }
     outfile.close();
   }
