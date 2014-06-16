@@ -1,6 +1,6 @@
 {
 TFile* file = new TFile(
-//"fitzeescale_out_MODE782_WithNewIC_MC_2012D.root"
+"fitzeescale_out_MODE782_WithNewIC_MC_2012D.root"
 );
 
 //TH1D* h1 = (TH1D*)file->Get("hEtaScaleRatio");

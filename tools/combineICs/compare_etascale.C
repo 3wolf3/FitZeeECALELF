@@ -9,7 +9,8 @@ TFile* file1 = new TFile(
 TFile* file2 = new TFile(
 //"FT_R_53_V21/EcalIntercalibConstants_2012ABCD_offline_191691_ProdNewIC_EtaScaleNorm_EtaScale.root"
 //"productICfile_EtaScale_prodIC_EtaScale.root"
-"FT_R_53_V21/EcalIntercalibConstants_2012ABCD_offline_191691_NewICEtaScale_EtaScale.root"
+//"FT_R_53_V21/EcalIntercalibConstants_2012ABCD_offline_191691_NewICEtaScale_EtaScale.root"
+"FT_R_53_V21/EcalIntercalibConstants_2012ABCD_offline_191691_NewICOnlyInvMCEtaScale_EtaScale.root"
 );
 
 //TH1D* h1 = (TH1D*)file1->Get("hEtaScaleRatio");
@@ -21,6 +22,7 @@ h1->SetLineColor(2);
 h1->SetMarkerColor(2);
 h2->SetLineColor(4);
 h2->SetMarkerColor(4);
+h2->SetMarkerStyle(22);
 
 TLegend* lg = new TLegend(0.6,0.7,0.9,0.9);
 //lg->AddEntry(h1, "Before", "pl");
