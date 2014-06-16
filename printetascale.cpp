@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 {
   if (argc<3)
   {
-    std::cout << argv[0] << "<etaScale.dat> <etaScaleCalibFormat.txt>"
+    std::cout << argv[0] << " <etaScale.dat> <etaScaleCalibFormat.txt>"
               << std::endl;
     return 1;
   }
