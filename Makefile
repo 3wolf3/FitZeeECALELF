@@ -4,7 +4,6 @@ CC = g++
 INCDIR = ./interface
 EXEDIR = ./bin
 SRCDIR = ./src
-LIBDIR = ./lib
 
 ROOTLIBS = -L$(ROOTSYS)/lib \
            -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d \
@@ -15,7 +14,7 @@ ROOTLIBS = -L$(ROOTSYS)/lib \
 ROOTCFLAGS = -m64 -I$(ROOTSYS)/include
 
 CFLAGS = $(ROOTCFLAGS) -I$(INCDIR)
-LIBS = $(ROOTLIBS) -L$(LIBDIR)
+LIBS = $(ROOTLIBS)
 
 DEPS = $(wildcard $(INCDIR)/*.hpp)
 SRCS = $(wildcard $(SRCDIR)/*.cpp)
@@ -33,15 +32,20 @@ EXES2 = copyTree.exe \
 
 all: $(EXES1) $(EXES2)
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(DEPS)
+$(OBJS): %.o: %.cpp $(DEPS) 
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-$(EXES1): $(OBJDIR)/%.o $(OBJDIR)/config.o
+$(EXES1): %.exe: $(SRCDIR)/%.o $(SRCDIR)/config.o | $(EXEDIR)
 	$(CC) -o $(EXEDIR)/$@ $^ $(CFLAGS) $(LIBS)
 
-$(EXES2): $(OBJDIR)/%.o 
+$(EXES2): %.exe: $(SRCDIR)/%.o | $(EXEDIR)
 	$(CC) -o $(EXEDIR)/$@ $^ $(CFLAGS) $(LIBS)
+
+$(EXEDIR):
+	mkdir $(EXEDIR)
 
 clean: 
 	\rm -f $(EXEDIR)/*.exe $(SRCDIR)/*.o
+
+
 

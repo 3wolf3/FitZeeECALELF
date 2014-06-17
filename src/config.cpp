@@ -1,6 +1,6 @@
 //config and parser
 //Chad Jarvis
-#include "config.hpp"
+#include <config.hpp>
 #include <vector>
 #include <string>
 #include <iostream>
