@@ -1,5 +1,10 @@
 
+CC = g++
 
+INCDIR = ./interface
+EXEDIR = ./bin
+OBJDIR = ./src
+SRCDIR = ./src
 
 ROOTLIBS = -L$(ROOTSYS)/lib \
            -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d \
@@ -8,39 +13,38 @@ ROOTLIBS = -L$(ROOTSYS)/lib \
            -Wl,-rpath,$(ROOTSYS)/lib -stdlib=libc++ -lm -ldl 
 
 ROOTCFLAGS = -m64 -I$(ROOTSYS)/include
-#ROOTCFLAGS = -pthread -m64 -I$(ROOTSYS)/include
 
-CFLAGS = $(ROOTCFLAGS) -I.
-LIBS = $(ROOTLIBS) -L. 
+CFLAGS = $(ROOTCFLAGS) -I$(INCDIR)
+LIBS = $(ROOTLIBS) -L$(LIBDIR)
 
-CC = g++ 
+DEPS = $(wildcard $(INCDIR)/*.hpp)
+SRCS = $(wildcard $(SRCDIR)/*.cpp)
+OBJS = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCS))
 
-all: fitzeescale.exe fitzee.exe copyTree.exe drawMee.exe draw_calibTable.exe calculateEtaScaleFromICs.exe printic.exe printetascale.exe 
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS)
 
 
-printetascale.exe: printetascale.o
-	$(CC) printetascale.o -o printetascale.exe $(CFLAGS) $(LIBS)
+all: fitzeescale.exe \
+        fitzee.exe \
+        copyTree.exe \
+        drawMee.exe \
+        draw_calibTable.exe \
+        calculateEtaScaleFromICs.exe \
+        printic.exe \
+        printetascale.exe 
 
-pprintetascale.o: printetascale.cpp
-	$(CC) -c printetascale.cpp -o printetascale.o $(CFLAGS)
+printetascale.exe: $(OBJDIR)/printetascale.o
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
 printic.exe: printic.o
 	$(CC) printic.o -o printic.exe $(CFLAGS) $(LIBS)
 
-printic.o: printic.cpp
-	$(CC) -c printic.cpp -o printic.o $(CFLAGS)
-
 calculateEtaScaleFromICs.exe: calculateEtaScaleFromICs.o
 	$(CC) calculateEtaScaleFromICs.o -o calculateEtaScaleFromICs.exe $(CFLAGS) $(LIBS)
 
-calculateEtaScaleFromICs.o: calculateEtaScaleFromICs.cpp
-	$(CC) -c calculateEtaScaleFromICs.cpp -o calculateEtaScaleFromICs.o $(CFLAGS)
-
 draw_calibTable.exe: draw_calibTable.o 
 	$(CC) draw_calibTable.o -o draw_calibTable.exe $(CFLAGS) $(LIBS)
-
-draw_calibTable.o: draw_calibTable.cpp
-	$(CC) -c draw_calibTable.cpp -o draw_calibTable.o $(CFLAGS)
 
 fitzeescale.exe: fitzeescale.o config.o
 	$(CC) fitzeescale.o config.o -o fitzeescale.exe $(CFLAGS) $(LIBS)
@@ -54,23 +58,8 @@ copyTree.exe: copyTree.o
 drawMee.exe: drawMee.o
 	$(CC) drawMee.o -o drawMee.exe $(CFLAGS) $(LIBS)
 
-fitzeescale.o: fitzeescale.cpp
-	$(CC) -c fitzeescale.cpp -o fitzeescale.o  $(CFLAGS)
-
-fitzee.o: fitzee.cpp
-	$(CC) -c fitzee.cpp -o fitzee.o  $(CFLAGS)
-
-copyTree.o: copyTree.cpp
-	$(CC) -c copyTree.cpp -o copyTree.o  $(CFLAGS)
-
-drawMee.o: drawMee.cpp
-	$(CC) -c drawMee.cpp -o drawMee.o  $(CFLAGS)
-
-config.o: config.cpp
-	$(CC) -c config.cpp -o config.o 
-
-
+.PHONY: clean
 
 clean: 
-	\rm -f *.o
-	\rm -f *.exe 
+	\rm -f $(EXEDIR)/*.exe *~ core $(INCDIR)/*~ $(LIBDIR)/*.o
+
