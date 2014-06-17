@@ -3,8 +3,8 @@ CC = g++
 
 INCDIR = ./interface
 EXEDIR = ./bin
-OBJDIR = ./src
 SRCDIR = ./src
+LIBDIR = ./lib
 
 ROOTLIBS = -L$(ROOTSYS)/lib \
            -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d \
@@ -19,47 +19,29 @@ LIBS = $(ROOTLIBS) -L$(LIBDIR)
 
 DEPS = $(wildcard $(INCDIR)/*.hpp)
 SRCS = $(wildcard $(SRCDIR)/*.cpp)
-OBJS = $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCS))
+OBJS = $(patsubst $(SRCDIR)/%.cpp,$(SRCDIR)/%.o,$(SRCS))
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+EXES1 = fitzeescale.exe fitzee.exe 
 
-
-all: fitzeescale.exe \
-        fitzee.exe \
-        copyTree.exe \
+EXES2 = copyTree.exe \
         drawMee.exe \
         draw_calibTable.exe \
         calculateEtaScaleFromICs.exe \
         printic.exe \
         printetascale.exe 
 
-printetascale.exe: $(OBJDIR)/printetascale.o
-	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
-printic.exe: printic.o
-	$(CC) printic.o -o printic.exe $(CFLAGS) $(LIBS)
+all: $(EXES1) $(EXES2)
 
-calculateEtaScaleFromICs.exe: calculateEtaScaleFromICs.o
-	$(CC) calculateEtaScaleFromICs.o -o calculateEtaScaleFromICs.exe $(CFLAGS) $(LIBS)
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS)
 
-draw_calibTable.exe: draw_calibTable.o 
-	$(CC) draw_calibTable.o -o draw_calibTable.exe $(CFLAGS) $(LIBS)
+$(EXES1): $(OBJDIR)/%.o $(OBJDIR)/config.o
+	$(CC) -o $(EXEDIR)/$@ $^ $(CFLAGS) $(LIBS)
 
-fitzeescale.exe: fitzeescale.o config.o
-	$(CC) fitzeescale.o config.o -o fitzeescale.exe $(CFLAGS) $(LIBS)
-
-fitzee.exe: fitzee.o config.o
-	$(CC) fitzee.o config.o -o fitzee.exe $(CFLAGS) $(LIBS)
-
-copyTree.exe: copyTree.o
-	$(CC) copyTree.o -o copyTree.exe $(CFLAGS) $(LIBS)
-
-drawMee.exe: drawMee.o
-	$(CC) drawMee.o -o drawMee.exe $(CFLAGS) $(LIBS)
-
-.PHONY: clean
+$(EXES2): $(OBJDIR)/%.o 
+	$(CC) -o $(EXEDIR)/$@ $^ $(CFLAGS) $(LIBS)
 
 clean: 
-	\rm -f $(EXEDIR)/*.exe *~ core $(INCDIR)/*~ $(LIBDIR)/*.o
+	\rm -f $(EXEDIR)/*.exe $(SRCDIR)/*.o
 
