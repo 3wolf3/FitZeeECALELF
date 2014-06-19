@@ -20,10 +20,10 @@ DEPS = $(wildcard $(INCDIR)/*.hpp)
 SRCS = $(wildcard $(SRCDIR)/*.cpp)
 OBJS = $(patsubst $(SRCDIR)/%.cpp,$(SRCDIR)/%.o,$(SRCS))
 
-EXES1 = fitzeescale.exe fitzee.exe 
+EXES1 = fitzeescale.exe fitzee.exe \
+        drawMee.exe 
 
 EXES2 = copyTree.exe \
-        drawMee.exe \
         draw_calibTable.exe \
         calculateEtaScaleFromICs.exe \
         printic.exe \
@@ -33,7 +33,7 @@ EXES2 = copyTree.exe \
 all: $(EXES1) $(EXES2)
 
 $(OBJS): %.o: %.cpp $(DEPS) 
-	$(CC) -c -o $@ $< $(CFLAGS)
+	$(CC) -o $@ -c $< $(CFLAGS)
 
 $(EXES1): %.exe: $(SRCDIR)/%.o $(SRCDIR)/config.o | $(EXEDIR)
 	$(CC) -o $(EXEDIR)/$@ $^ $(CFLAGS) $(LIBS)
