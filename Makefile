@@ -20,15 +20,16 @@ DEPS = $(wildcard $(INCDIR)/*.hpp)
 SRCS = $(wildcard $(SRCDIR)/*.cpp)
 OBJS = $(patsubst $(SRCDIR)/%.cpp,$(SRCDIR)/%.o,$(SRCS))
 
+# this group of exes use config.o
 EXES1 = fitzeescale.exe fitzee.exe \
         drawMee.exe 
 
+# this group of exes do not use config.o
 EXES2 = copyTree.exe \
         draw_calibTable.exe \
         calculateEtaScaleFromICs.exe \
         printic.exe \
         printetascale.exe 
-
 
 all: $(EXES1) $(EXES2)
 
