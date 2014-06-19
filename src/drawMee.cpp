@@ -108,14 +108,10 @@ int main(int argc, char* argv[])
   std::cout << "scale: " << _scale << std::endl;
   std::cout << "RegVersion: " << regVersion << std::endl;
   std::cout << "Both/Odd/Even: " << _oddeven << std::endl;
-  if (method==7) std::cout << "  EtaScale Reference File = " << etascale_ref << std::endl;
-  if (method==71||method==72)
-  {
-    std::cout << "  EtaScale Reference File A = " << etascale_refA << std::endl;
-    std::cout << "  EtaScale Reference File B = " << etascale_refB << std::endl;
-    std::cout << "  EtaScale Reference File C = " << etascale_refC << std::endl;
-    std::cout << "  EtaScale Reference File D = " << etascale_refD << std::endl;
-  }
+  std::cout << "  EtaScale Reference File A = " << etascale_refA << std::endl;
+  std::cout << "  EtaScale Reference File B = " << etascale_refB << std::endl;
+  std::cout << "  EtaScale Reference File C = " << etascale_refC << std::endl;
+  std::cout << "  EtaScale Reference File D = " << etascale_refD << std::endl;
 
   // reading data
   TChain* tree = new TChain("selected", "selected");
@@ -141,75 +137,11 @@ int main(int argc, char* argv[])
   std::vector<EtaRingEnergyScale> EtaRingEtaScaleRefB;
   std::vector<EtaRingEnergyScale> EtaRingEtaScaleRefC;
   std::vector<EtaRingEnergyScale> EtaRingEtaScaleRefD;
-  {
-    // read reference scales
-    // A
-    std::ifstream reffileA(etascale_refA);
-    if (reffileA.is_open())
-    {
-      std::string line;
-      EtaRingEnergyScale scale;
-      while (getline(reffileA,line))
-      {
-        std::stringstream sline(line);
-        sline >> scale.EtaRing
-            >> scale.s
-            >> scale.serr;
-        EtaRingEtaScaleRefA.push_back(scale);
-      }
-      reffileA.close();
-    }
-    // B
-    std::ifstream reffileB(etascale_refB);
-    if (reffileB.is_open())
-    {
-      std::string line;
-      EtaRingEnergyScale scale;
-      while (getline(reffileB,line))
-      {
-        std::stringstream sline(line);
-        sline >> scale.EtaRing
-            >> scale.s
-            >> scale.serr;
-        EtaRingEtaScaleRefB.push_back(scale);
-      }
-      reffileB.close();
-    }
-    // C
-    std::ifstream reffileC(etascale_refC);
-    if (reffileC.is_open())
-    {
-      std::string line;
-      EtaRingEnergyScale scale;
-      while (getline(reffileC,line))
-      {
-        std::stringstream sline(line);
-        sline >> scale.EtaRing
-            >> scale.s
-            >> scale.serr;
-        EtaRingEtaScaleRefC.push_back(scale);
-      }
-      reffileC.close();
-    }
-    // D
-    std::ifstream reffileD(etascale_refD);
-    if (reffileD.is_open())
-    {
-      std::string line;
-      EtaRingEnergyScale scale;
-      while (getline(reffileD,line))
-      {
-        std::stringstream sline(line);
-        sline >> scale.EtaRing
-            >> scale.s
-            >> scale.serr;
-        EtaRingEtaScaleRefD.push_back(scale);
-      }
-      reffileD.close();
-    }
-  }
 
-
+  EtaRingEtaScaleRefA = GetVectorEtaRingEtaScaleFromFile(etascale_refA);
+  EtaRingEtaScaleRefB = GetVectorEtaRingEtaScaleFromFile(etascale_refB);
+  EtaRingEtaScaleRefC = GetVectorEtaRingEtaScaleFromFile(etascale_refC);
+  EtaRingEtaScaleRefD = GetVectorEtaRingEtaScaleFromFile(etascale_refD);
 
   // Get Mee Hist using SC energy
   TH1D* h1 = (TH1D*)getTH1DMeeSCEnergy(tree, "hMeeSC", _nbins, maxevt, 1.0, _oddeven);
