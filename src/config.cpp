@@ -1,5 +1,8 @@
 //config and parser
 //Chad Jarvis
+// modified and extended by 
+//  Hengne Li @ LPSC Grenoble, 2012
+
 #include <config.hpp>
 #include <vector>
 #include <string>
@@ -8,17 +11,13 @@
 #include <stdio.h>
 #include <vector>
 #include <ctype.h>
+
 using namespace std;
 
-//config::config(char* filename) {
-//  config(string((const char*)filename));
-//}
-
-config::config(string filename) {
+config::config(char* filename) {
   vector <string> rcplist;
   vector <string> parsestring;
-  //  string filename = "config.txt";
-  ifstream rcpfile(filename.c_str());
+  ifstream rcpfile(filename);
   if(rcpfile.fail()) {
     cout << "Cant open file " << filename << endl;
   }
@@ -36,6 +35,10 @@ config::config(string filename) {
     parselist.push_back(parsestring);
   }
   listsize=parselist.size();
+}
+
+config::config(string filename) {
+  config(filename.c_str());
 }
 
 vector <string> config::parser(string line) {
@@ -110,6 +113,7 @@ bool config::getBool(string cond) {
   else cout << "boolean not set to true or false for " << cond << endl;
   return var;
 }
+
 string config::getString(string cond) {
   string astring = find(cond,"string");
   while(astring.find('"')!=string::npos) {

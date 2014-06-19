@@ -1,8 +1,7 @@
 //rcp like config file
 //Chad Jarvis
-
-#ifndef config_hpp
-#define config_hpp
+// modified and extended by 
+//    Hengne Li, LPSC, Grenoble, 2012
 
 #include <vector>
 #include <string>
@@ -12,11 +11,11 @@ using namespace std;
 
 class config {
 public: 
-  vector <vector <string> > parselist;
+  vector<vector<string> > parselist;
   int listsize;
+  config(char* filename);
   config(string filename);
-  //config(char* filename);
-  static vector <string> parser(string line);
+  static vector<string> parser(string line);
   string find(string cond, string type_str);
   void error(int rep, string cond);
   double getFloat(string cond);
@@ -31,5 +30,3 @@ public:
   vector <vector <int> > getIntMatrix(string cond);
 
 };
-
-#endif
