@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
   }
 
   // open steering file names
-  config  steer(std::string((const char*)argv[1]));
+  config  steer(argv[1]);
 
   mode = steer.getInt("mode");
   method = steer.getInt("method");
