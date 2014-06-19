@@ -134,116 +134,14 @@ int main(int argc, char* argv[])
   TFile* fout = new TFile(outrootfilename.c_str(), "recreate");
 
   // calibTable
-  std::vector<calibRecord> calibTable = getCalibTableFromFile(calibtablename.c_str());
+  std::map<int, std::map<int, std::map<int, calibRecord> > > calibTable = getMapCalibTableFromFile(calibtablename.c_str());
   
-  std::vector<EnergyScale> EtaScaleRef;
-  if (method==7)
-  {
-    // read reference scales
-    std::ifstream reffile(etascale_ref);
-    if (reffile.is_open())
-    {
-      std::string line;
-      EnergyScale scale;
-      while (getline(reffile,line))
-      {
-        std::stringstream sline(line);
-        sline >> scale.min
-            >> scale.max
-            >> scale.s
-            >> scale.serr;
-        EtaScaleRef.push_back(scale);
-      }
-      reffile.close();
-    }
-  }
-
-  std::vector<EnergyScale> EtaScaleRefA;
-  std::vector<EnergyScale> EtaScaleRefB;
-  std::vector<EnergyScale> EtaScaleRefC;
-  std::vector<EnergyScale> EtaScaleRefD;
-  if (method==71)
-  {
-    // read reference scales
-    // A
-    std::ifstream reffileA(etascale_refA);
-    if (reffileA.is_open())
-    {
-      std::string line;
-      EnergyScale scale;
-      while (getline(reffileA,line))
-      {
-        std::stringstream sline(line);
-        sline >> scale.min
-            >> scale.max
-            >> scale.s
-            >> scale.serr;
-        EtaScaleRefA.push_back(scale);
-      }
-      reffileA.close();
-    }
-    // B
-    std::ifstream reffileB(etascale_refB);
-    if (reffileB.is_open())
-    {
-      std::string line;
-      EnergyScale scale;
-      while (getline(reffileB,line))
-      {
-        std::stringstream sline(line);
-        sline >> scale.min
-            >> scale.max
-            >> scale.s
-            >> scale.serr;
-        EtaScaleRefB.push_back(scale);
-      }
-      reffileB.close();
-    }
-    // C
-    std::ifstream reffileC(etascale_refC);
-    if (reffileC.is_open())
-    {
-      std::string line;
-      EnergyScale scale;
-      while (getline(reffileC,line))
-      {
-        std::stringstream sline(line);
-        sline >> scale.min
-            >> scale.max
-            >> scale.s
-            >> scale.serr;
-        EtaScaleRefC.push_back(scale);
-      }
-      reffileC.close();
-    }
-    // D
-    std::ifstream reffileD(etascale_refD);
-    if (reffileD.is_open())
-    {
-      std::string line;
-      EnergyScale scale;
-      while (getline(reffileD,line))
-      {
-        std::stringstream sline(line);
-        sline >> scale.min
-            >> scale.max
-            >> scale.s
-            >> scale.serr;
-        EtaScaleRefD.push_back(scale);
-      }
-      reffileD.close();
-    }
-  }
-
-  // method 72
+  // EtaScale files
   std::vector<EtaRingEnergyScale> EtaRingEtaScaleRefA;
   std::vector<EtaRingEnergyScale> EtaRingEtaScaleRefB;
   std::vector<EtaRingEnergyScale> EtaRingEtaScaleRefC;
   std::vector<EtaRingEnergyScale> EtaRingEtaScaleRefD;
-  if (method==72)
   {
-    // init EtaRing table
-    initEEEtaRingTable();
     // read reference scales
     // A
     std::ifstream reffileA(etascale_refA);
@@ -311,74 +209,46 @@ int main(int argc, char* argv[])
     }
   }
 
-  // Get Original Mee Hist
-  TH1D* h0 = (TH1D*)getTH1DOriginalMee(tree, "hMeeOrg", _nbins, maxevt, 1.0, _oddeven);
-  h0->SetMarkerColor(2);
-  h0->SetLineColor(2);
-  
-  // Get Mee Hist with Energy Reg. + EtaScale + Re-Calib
-  TH1D* h5;
-  if (method==7) 
-  {
-    h5 = (TH1D*)getTH1DMeeWithEtaScale(tree, extree, calibTable, EtaScaleRef, "hMeeEtaScale", _nbins, maxevt, method, 1.0);
-  }
-  else if (method==71) 
-  {
-    h5 = (TH1D*)getTH1DMeeWithEtaScaleABCD(tree, extree, calibTable, EtaScaleRefA, EtaScaleRefB, EtaScaleRefC, EtaScaleRefD, "hMeeRegElecEtaScaleReCalib", _nbins, maxevt, method, 1.0, _oddeven);
-  }
-  else if (method==72)
-  {
-    h5 = (TH1D*)getTH1DMeeWithEtaRingEtaScaleABCD(tree, extree, calibTable, 
-                 EtaRingEtaScaleRefA, EtaRingEtaScaleRefB, EtaRingEtaScaleRefC, EtaRingEtaScaleRefD, 
-                 "hMeeRegElecEtaScaleReCalib", _nbins, maxevt, method, 1.0, _oddeven, regVersion);
-  }  
-  h5->SetMarkerColor(4);
-  h5->SetLineColor(4);
+
+
+  // Get Mee Hist using SC energy
+  TH1D* h1 = (TH1D*)getTH1DMeeSCEnergy(tree, "hMeeSC", _nbins, maxevt, 1.0, _oddeven);
+  h1->SetMarkerColor(9);
+  h1->SetLineColor(9);
+  // print
+  //std::cout << "nEvents: " << h1->GetEntries() << std::endl;
+
   // Get Mee Hist using Original Energy regression
-  TH1D* h3 = (TH1D*)getTH1DMeeRegElec(tree, "hMeeRegElec", _nbins, maxevt, 1.0, _oddeven, regVersion);
+  TH1D* h3 = (TH1D*)getTH1DMeeRegEnergy(tree, "hMeeReg", _nbins, maxevt, 1.0, _oddeven, regVersion);
   h3->SetMarkerColor(6);
   h3->SetLineColor(6);
 
   // Get Mee Hist using Energy Reg. + EtaScale
-  TH1D* h4;
-  if (method==7)
-  {
-    h4 = (TH1D*)getTH1DMeeRegV8ElecWithEtaScale(tree, EtaScaleRef, "hMeeRegV8ElecEtaScale", _nbins, maxevt, 1.0);
-  }
-  else if (method==71)
-  {
-    h4 = (TH1D*)getTH1DMeeRegElecWithEtaScaleABCD(tree, EtaScaleRefA, EtaScaleRefB, EtaScaleRefC, EtaScaleRefD, "hMeeRegElecEtaScale", _nbins, maxevt, 1.0, _oddeven, regVersion);
-  }
-  else if (method==72)
-  {
-    h4 = (TH1D*)getTH1DMeeRegElecWithEtaRingEtaScaleABCD(tree, 
+  TH1D* h4 = (TH1D*)getTH1DMeeRegEnergyEtaRingEtaScale(tree, 
                  EtaRingEtaScaleRefA, EtaRingEtaScaleRefB, EtaRingEtaScaleRefC, EtaRingEtaScaleRefD,
-                 "hMeeRegElecEtaScale", _nbins, maxevt, 1.0, _oddeven, regVersion);
-  }
+                 "hMeeRegEtaScale", _nbins, maxevt, 1.0, _oddeven, regVersion);
   h4->SetMarkerColor(8);
   h4->SetLineColor(8);
- 
-  // Get Mee Hist
-  TH1D* h1 = (TH1D*)getTH1DMee(tree, extree, calibTable, "hMee", _nbins, maxevt, 23, 1.0, _oddeven);
-  h1->SetMarkerColor(9);
-  h1->SetLineColor(9);
- 
-  // print
-  //std::cout << "nEvents: " << h1->GetEntries() << std::endl;
+
+  // Get Mee Hist with Energy Reg. + EtaScale + Re-Calib
+  TH1D* h5 = (TH1D*)getTH1DMeeRegEnergyEtaRingEtaScaleNewICs(tree, extree, calibTable, 
+                 EtaRingEtaScaleRefA, EtaRingEtaScaleRefB, EtaRingEtaScaleRefC, EtaRingEtaScaleRefD, 
+                 "hMeeRegEtaScaleNewICs", _nbins, maxevt, method, 1.0, _oddeven, regVersion);
+  h5->SetMarkerColor(4);
+  h5->SetLineColor(4);
+
   
   // write the hist to out root file
   fout->cd();
-  h0->Write();
-  //h01->Write();
   h1->Write();
-  //h2->Write();
   h3->Write();
   h4->Write();
   h5->Write();
 
   // delete the chain no more need it
   tree->Delete();
-  
+  extree->Delete();
+ 
   // close
   fout->Close();
   
