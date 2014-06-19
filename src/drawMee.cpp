@@ -1,113 +1,47 @@
+// Author: Hengne Li UVa CERN 2014
+
 #include "TFile.h"
 #include "drawMee.hpp"
-
-int _nbins = 240;
-double _scale = 1.0; //1.04141815; //1.040002;
-int _oddeven = 0; // 0: both, 1: Odd, 2: Even
-
-char etascale_ref[3000];
-char etascale_refA[3000];
-char etascale_refB[3000];
-char etascale_refC[3000];
-char etascale_refD[3000];
-
-std::string regVersion = "RegV8";
+#include "config.hpp"
 
 int main(int argc, char* argv[])
 {
-  if (argc<4)
+
+  if( argc<2 )
   {
-    std::cout << argv[0] << " <input_tree_file.root> <calib_table_file.dat> <output_file.root> <max_n_events> <method> <overall_scale> <OddEven> <eta_scale_file> \\n"
-     << "       <regVersion> "
-    << std::endl;
+    std::cout << argv[0] << " config_file " << std::endl;
     return 0;
   }
-  
-  std::string inrootfilename(argv[1]);
-  std::string calibtablename(argv[2]);
-  std::string outrootfilename(argv[3]);
+
+  // open steering file names
+  config steer(argv[1]);
+
+  std::string inrootfilename = steer.getString("inrootfilename");
+  std::string calibtablename = steer.getString("calibtablename");
+  std::string outrootfilename = steer.getString("outrootfilename");
  
-  int maxevt = -1;
-  if (argc>4)
-  {
-    maxevt = atoi(argv[4]);
-  }
-  
-  int method=31;
-  if (argc>5)
-  {
-    method = atoi(argv[5]);
-  }
-  
-  if (argc>6)
-  {
-    _scale = atof(argv[6]);
-  }
+  int maxevt = steer.getInt(std::string("maxevt"));
+  int nbins = steer.getInt("nbins"); 
+  int method = steer.getInt("method");
+  double scale = steer.getDouble("scale");
+  int oddeven = steer.getInt("oddeven");
+ 
+  std::string etascale_refA = steer.getString("etascale_refA");
+  std::string etascale_refB = steer.getString("etascale_refB");
+  std::string etascale_refC = steer.getString("etascale_refC");
+  std::string etascale_refD = steer.getString("etascale_refD");
 
-  if (argc>7)
-  {
-    _oddeven = atoi(argv[7]);
-  }
-
-  if (argc>8)
-  {
-    sprintf(etascale_ref, "%s", argv[8]);
-  }
-
-  if (argc>9)
-  {
-    regVersion = std::string(argv[9]);
-  }
-
-  // check
-  if (method==7)
-  {
-    if (argc<=8)
-    {
-      std::cout << "Missing etascale reference file. Please run " << argv[0] << " to print usage information. " << std::endl;
-      return 1;
-    }
-  }
-
-  if (method==71||method==72)
-  {
-    if (argc<=8)
-    {
-      std::cout << "Missing etascale reference file. Please run " << argv[0] << " to print usage information. " << std::endl;
-      return 1;
-    }
-    else
-    {
-      std::string s(argv[8]);
-      std::string delimiter = ";";
-      std::vector<std::string> ss;
-      size_t pos = 0;
-      std::string token;
-      while ((pos = s.find(delimiter)) != std::string::npos) {
-        token = s.substr(0, pos);
-        s.erase(0, pos + delimiter.length());
-        ss.push_back(token);
-      }
-      ss.push_back(s);
-
-      sprintf(etascale_refA, "%s", ss.at(0).c_str());
-      sprintf(etascale_refB, "%s", ss.at(1).c_str());
-      sprintf(etascale_refC, "%s", ss.at(2).c_str());
-      sprintf(etascale_refD, "%s", ss.at(3).c_str());
-
-    }
-
-  }
-
+  std::string regVersion = steer.getString("regVersion");
 
   std::cout << "Input file: " << inrootfilename << std::endl;
   std::cout << "Calib Table file: " << calibtablename << std::endl;
   std::cout << "ouput file: " << outrootfilename << std::endl;
   std::cout << "max events: " << maxevt << std::endl;
+  std::cout << "nbins in the hist: " << nbins << std::endl;
   std::cout << "method: " << method << std::endl;
-  std::cout << "scale: " << _scale << std::endl;
+  std::cout << "scale: " << scale << std::endl;
   std::cout << "RegVersion: " << regVersion << std::endl;
-  std::cout << "Both/Odd/Even: " << _oddeven << std::endl;
+  std::cout << "Both/Odd/Even: " << oddeven << std::endl;
   std::cout << "  EtaScale Reference File A = " << etascale_refA << std::endl;
   std::cout << "  EtaScale Reference File B = " << etascale_refB << std::endl;
   std::cout << "  EtaScale Reference File C = " << etascale_refC << std::endl;
@@ -138,34 +72,32 @@ int main(int argc, char* argv[])
   std::vector<EtaRingEnergyScale> EtaRingEtaScaleRefC;
   std::vector<EtaRingEnergyScale> EtaRingEtaScaleRefD;
 
-  EtaRingEtaScaleRefA = GetVectorEtaRingEtaScaleFromFile(etascale_refA);
-  EtaRingEtaScaleRefB = GetVectorEtaRingEtaScaleFromFile(etascale_refB);
-  EtaRingEtaScaleRefC = GetVectorEtaRingEtaScaleFromFile(etascale_refC);
-  EtaRingEtaScaleRefD = GetVectorEtaRingEtaScaleFromFile(etascale_refD);
+  EtaRingEtaScaleRefA = GetVectorEtaRingEtaScaleFromFile(etascale_refA.c_str());
+  EtaRingEtaScaleRefB = GetVectorEtaRingEtaScaleFromFile(etascale_refB.c_str());
+  EtaRingEtaScaleRefC = GetVectorEtaRingEtaScaleFromFile(etascale_refC.c_str());
+  EtaRingEtaScaleRefD = GetVectorEtaRingEtaScaleFromFile(etascale_refD.c_str());
 
   // Get Mee Hist using SC energy
-  TH1D* h1 = (TH1D*)getTH1DMeeSCEnergy(tree, "hMeeSC", _nbins, maxevt, 1.0, _oddeven);
+  TH1D* h1 = (TH1D*)getTH1DMeeSCEnergy(tree, "hMeeSC", nbins, maxevt, scale, oddeven);
   h1->SetMarkerColor(9);
   h1->SetLineColor(9);
-  // print
-  //std::cout << "nEvents: " << h1->GetEntries() << std::endl;
 
   // Get Mee Hist using Original Energy regression
-  TH1D* h3 = (TH1D*)getTH1DMeeRegEnergy(tree, "hMeeReg", _nbins, maxevt, 1.0, _oddeven, regVersion);
+  TH1D* h3 = (TH1D*)getTH1DMeeRegEnergy(tree, "hMeeReg", nbins, maxevt, scale, oddeven, regVersion);
   h3->SetMarkerColor(6);
   h3->SetLineColor(6);
 
   // Get Mee Hist using Energy Reg. + EtaScale
   TH1D* h4 = (TH1D*)getTH1DMeeRegEnergyEtaRingEtaScale(tree, 
                  EtaRingEtaScaleRefA, EtaRingEtaScaleRefB, EtaRingEtaScaleRefC, EtaRingEtaScaleRefD,
-                 "hMeeRegEtaScale", _nbins, maxevt, 1.0, _oddeven, regVersion);
+                 "hMeeRegEtaScale", nbins, maxevt, scale, oddeven, regVersion);
   h4->SetMarkerColor(8);
   h4->SetLineColor(8);
 
   // Get Mee Hist with Energy Reg. + EtaScale + Re-Calib
   TH1D* h5 = (TH1D*)getTH1DMeeRegEnergyEtaRingEtaScaleNewICs(tree, extree, calibTable, 
                  EtaRingEtaScaleRefA, EtaRingEtaScaleRefB, EtaRingEtaScaleRefC, EtaRingEtaScaleRefD, 
-                 "hMeeRegEtaScaleNewICs", _nbins, maxevt, method, 1.0, _oddeven, regVersion);
+                 "hMeeRegEtaScaleNewICs", nbins, maxevt, method, scale, oddeven, regVersion);
   h5->SetMarkerColor(4);
   h5->SetLineColor(4);
 
