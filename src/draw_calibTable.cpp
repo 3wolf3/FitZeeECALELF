@@ -1,4 +1,4 @@
-// Author Hengne Li
+// Author Hengne Li @ UVa CERN, 2014
 
 #include "TROOT.h"
 #include "TFile.h"

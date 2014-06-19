@@ -5,7 +5,7 @@
 #include <vector>
 #include <stdio.h>
 
-// Author Hengne Li
+// Author Hengne Li @ UVa CERN 2014
 
 typedef struct
 {
