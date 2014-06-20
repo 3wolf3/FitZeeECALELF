@@ -10,7 +10,7 @@
 #include <fstream>
 #include <stdio.h>
 #include <vector>
-#include <ctype.h>
+#include <cstdlib>
 
 using namespace std;
 
