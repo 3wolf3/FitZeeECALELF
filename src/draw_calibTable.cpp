@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
 
  int idx, ix, iy, iz, fixed, nfits;
  double c, cerr;
- std::ifstream myfile(filename);
+ std::ifstream myfile(filename.c_str());
  std::string line;
  if (myfile.is_open())
  {
