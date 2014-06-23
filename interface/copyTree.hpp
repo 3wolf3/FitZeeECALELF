@@ -16,14 +16,13 @@
    Int_t           runNumber;
    ULong64_t       eventNumber;
    Int_t           lumiBlock;
-   ULong64_t       runTime;
+   UInt_t       runTime;
    Float_t         mcGenWeight;
    Char_t          HLTfire;
    Int_t           nPU[1];
    Float_t         rho;
    Int_t           nPV;
    Int_t           eleID[2];
-   Int_t           ZStat;
    Int_t           chargeEle[2];
    Float_t         etaSCEle[2];
    Float_t         phiSCEle[2];
@@ -88,6 +87,8 @@
    Float_t         e5x5SCEle[2];
    Float_t         pModeGsfEle[2];
    Float_t         pAtVtxGsfEle[2];
+   Float_t         pNormalizedChi2Ele[2];
+   Float_t         trackMomentumErrorEle[2];
    Float_t         invMass;
    Float_t         invMass_SC;
    Float_t         invMass_e5x5;
@@ -120,8 +121,8 @@
    Int_t           nHitsSCEle[2];
 
 // extra tree
-
 //Declaration of leaves types
+   ULong64_t       runTime1;
    std::vector<float>*   rawIdRecHitSCEle1;
    std::vector<float>*   rawIdRecHitSCEle2;
    std::vector<float>*   XRecHitSCEle1;
@@ -153,7 +154,6 @@ void SetTreeBranch(TTree* tree)
    tree->SetBranchAddress("rho",&rho);
    tree->SetBranchAddress("nPV",&nPV);
    tree->SetBranchAddress("eleID",eleID);
-   tree->SetBranchAddress("ZStat",&ZStat);
    tree->SetBranchAddress("chargeEle",chargeEle);
    tree->SetBranchAddress("etaSCEle",etaSCEle);
    tree->SetBranchAddress("phiSCEle",phiSCEle);
@@ -218,6 +218,8 @@ void SetTreeBranch(TTree* tree)
    tree->SetBranchAddress("e5x5SCEle",e5x5SCEle);
    tree->SetBranchAddress("pModeGsfEle",pModeGsfEle);
    tree->SetBranchAddress("pAtVtxGsfEle",pAtVtxGsfEle);
+   tree->SetBranchAddress("pNormalizedChi2Ele",pNormalizedChi2Ele);
+   tree->SetBranchAddress("trackMomentumErrorEle",trackMomentumErrorEle);
    tree->SetBranchAddress("invMass",&invMass);
    tree->SetBranchAddress("invMass_SC",&invMass_SC);
    tree->SetBranchAddress("invMass_e5x5",&invMass_e5x5);
@@ -248,6 +250,7 @@ void SetTreeBranch(TTree* tree)
    tree->SetBranchAddress("etaMCEle",etaMCEle);
    tree->SetBranchAddress("phiMCEle",phiMCEle);
    tree->SetBranchAddress("nHitsSCEle",nHitsSCEle);
+
 }
 
 // set tree branches
@@ -257,7 +260,7 @@ void SetExtraTreeBranch(TTree* extraCalibTree){
    extraCalibTree->SetBranchAddress("runNumber",&runNumber);
    extraCalibTree->SetBranchAddress("eventNumber",&eventNumber);
    extraCalibTree->SetBranchAddress("lumiBlock",&lumiBlock);
-   extraCalibTree->SetBranchAddress("runTime",&runTime);
+   extraCalibTree->SetBranchAddress("runTime",&runTime1);
    extraCalibTree->SetBranchAddress("nHitsSCEle",nHitsSCEle);
    extraCalibTree->SetBranchAddress("rawIdRecHitSCEle1",&rawIdRecHitSCEle1);
    extraCalibTree->SetBranchAddress("rawIdRecHitSCEle2",&rawIdRecHitSCEle2);

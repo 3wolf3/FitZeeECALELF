@@ -8,7 +8,7 @@ infile="root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/heli/ntuple/Nt
 outfile="root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/heli/ntuple/NtupleComb_DoubleElectron-ZSkim-RUN2012A-22Jan-v1_${tag}.root"
 
 
-data
+date
 
 copyTree.exe $infile $outfile -1 $sele
 
