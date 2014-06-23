@@ -5,7 +5,7 @@ int main(int argc, char* argv[])
 {
   if (argc<3)
   {
-    std::cout << "> drawMee <input_tree_file.root> <output_file.root> <max_n_events> <selection>"
+    std::cout << argv[0] << " <input_tree_file.root> <output_file.root> <max_n_events> <selection>"
     << std::endl;
     return 0;
   }
