@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 
  
   // output root file
-  TFile* fout = new TFile(outrootfilename.c_str(), "recreate");
+  TFile* fout = TFile::Open(outrootfilename.c_str(), "recreate");
 
   // calibTable
   std::map<int, std::map<int, std::map<int, calibRecord> > > calibTable = getMapCalibTableFromFile(calibtablename.c_str());

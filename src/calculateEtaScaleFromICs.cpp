@@ -202,7 +202,7 @@ int main(int argc, char* argv[])
   }
 
 
-  TFile* file = new TFile(_output_etascale_file.c_str(), "recreate");
+  TFile* file = TFile::Open(_output_etascale_file.c_str(), "recreate");
 
   double histBins[1000];
   for (int ibin=0; ibin<(int)EtaScale.size(); ibin++)

@@ -27,13 +27,13 @@ int main(int argc, char* argv[])
   
 
   // reading data
-  TFile* infile = new TFile(inrootfilename.c_str());
+  TFile* infile = TFile::Open(inrootfilename.c_str());
   TTree* tree = (TTree*)infile->Get("selected");
   TTree* extree = (TTree*)infile->Get("extraCalibTree");
   extree->BuildIndex("runNumber","eventNumber");
    
   // output root file
-  TFile* fout = new TFile(outrootfilename.c_str(), "recreate");
+  TFile* fout = TFile::Open(outrootfilename.c_str(), "recreate");
 
   // Set the branches for the TChain/TTree
   SetTreeBranch(tree);

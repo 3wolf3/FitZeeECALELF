@@ -173,7 +173,7 @@ int main(int argc, char* argv[])
   extree->Add(rootfile_in.c_str()); 
  
   // output root file
-  TFile* fout = new TFile(rootfile_out.c_str(), "recreate");
+  TFile* fout = TFile::Open(rootfile_out.c_str(), "recreate");
   
   // Set the branches for the TChain/TTree
   SetTreeBranch(tree);

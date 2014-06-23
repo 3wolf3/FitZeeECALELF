@@ -146,7 +146,7 @@ int main(int argc, char* argv[])
   SetExtraTreeBranch(extree);
   
   // output root file
-  TFile* fout = new TFile(rootfile_out.c_str(), "recreate");
+  TFile* fout = TFile::Open(rootfile_out.c_str(), "recreate");
   
 
 

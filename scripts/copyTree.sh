@@ -1,43 +1,16 @@
+#!/bin/sh
 
-g++ -o copyTree.exe copyTree.cc \
-      -pthread -m64 \
-      -I${ROOTSYS}/include \
-      -I./  -L${ROOTSYS}/lib \
-      -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d \
-      -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics \
-      -lMathCore -lThread -lMinuit -lMinuit2 -lTreePlayer -lpthread \
-      -Wl,-rpath,${ROOTSYS}/lib -lm -ldl
+tag="_EEN"
+sele="etaSCEle[1]<-2.2&&recoFlagsEle[1]==-1"
 
-tag="_EEn"
-sele="etaSCEle[1]<-2.2&&ZStat==2"
+infile="root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/heli/ntuple/NtupleComb_DoubleElectron-ZSkim-RUN2012A-22Jan-v1.root"
+
+outfile="root://eoscms//eos/cms/store/group/alca_ecalcalib/ecalelf/heli/ntuple/NtupleComb_DoubleElectron-ZSkim-RUN2012A-22Jan-v1_${tag}.root"
 
 
-./copyTree.exe ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012AB.root ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012AB_1M.root 1000000 "runNumber>0"
+data
 
-#./copyTree.exe ntuple.root ntuple_out.root -1 "etaSCEle[1]>2.3"
-date
-
-#./copytree.exe ntuple_DoubleElectron-HighEtaSkim-RUN2012A-22Jan-v1-Extra.root copyTreeExtra_out_A${tag}.root -1 "$sele"
-date
-
-#./copytree.exe ntuple_DoubleElectron-HighEtaSkim-RUN2012B-22Jan-v1-Extra.root copyTreeExtra_out_B${tag}.root -1 "$sele"
-date
-#./copytree.exe ntuple_DoubleElectron-HighEtaSkim-RUN2012C-22Jan-v1-Extra.root copyTreeExtra_out_C${tag}.root -1 "$sele"
-date
-#./copytree.exe ntuple_DoubleElectron-HighEtaSkim-RUN2012D-22Jan-v1-Extra.root copyTreeExtra_out_D${tag}.root -1 "$sele"
-date
-
-#hadd copyTreeExtra_out_ABCD${tag}.root  \
-#     copyTreeExtra_out_A${tag}.root \
-#     copyTreeExtra_out_B${tag}.root \
-#     copyTreeExtra_out_C${tag}.root \
-#     copyTreeExtra_out_D${tag}.root 
-
-#hadd copyTreeExtra_out_ABC${tag}.root  \
-#     copyTreeExtra_out_A${tag}.root \
-#     copyTreeExtra_out_B${tag}.root \
-#     copyTreeExtra_out_C${tag}.root \
-
+copyTree.exe $infile $outfile -1 $sele
 
 date
 

@@ -29,7 +29,7 @@ int main(int argc, char* argv[])
  std::cout << " foutnameps = " << foutnameps << std::endl;
  std::cout << " foutnamepdf = " << foutnamepdf << std::endl;
 
- TFile* fout = new TFile(foutname.c_str(), "recreate");
+ TFile* fout = TFile::Open(foutname.c_str(), "recreate");
  
  char name[1000];
 
