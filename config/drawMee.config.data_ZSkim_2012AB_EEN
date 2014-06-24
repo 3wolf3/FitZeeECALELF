@@ -1,0 +1,18 @@
+
+string inrootfilename data/NtupleComb_DoubleElectron-ZSkim-RUN2012AB-22Jan-v1_EEN.root 
+string calibtablename data/calibTable_out_HighEta_withEtaScale_MODE782_WithNewIC_Data_2012AB_EEN.dat
+string outrootfilename output/drawMee_out_data_ZSkim_2012AB_EEN.root
+
+int maxevt -1
+int nbins 60
+int method 72 
+double scale 1.0
+int oddeven 0
+
+string etascale_refA data/fitzeescale_out_MODE782_WithNewIC_DataOvMC_2012AB.dat 
+string etascale_refB data/fitzeescale_out_MODE782_WithNewIC_DataOvMC_2012AB.dat
+string etascale_refC data/fitzeescale_out_MODE782_WithNewIC_DataOvMC_2012C.dat
+string etascale_refD data/fitzeescale_out_MODE782_WithNewIC_DataOvMC_2012D.dat
+
+string regVersion RegV8 
+
