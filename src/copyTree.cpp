@@ -1,5 +1,11 @@
 #include "copyTree.hpp"
 #include "TFile.h"
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <sstream>
+#include <string>
+#include <utility>
 
 int main(int argc, char* argv[])
 {

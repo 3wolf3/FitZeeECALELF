@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
   std::string calibtablename = steer.getString("calibtablename");
   std::string outrootfilename = steer.getString("outrootfilename");
  
-  int maxevt = steer.getInt(std::string("maxevt"));
+  int maxevt = steer.getInt("maxevt");
   int nbins = steer.getInt("nbins"); 
   int method = steer.getInt("method");
   double scale = steer.getDouble("scale");

@@ -41,13 +41,6 @@ EXES2 = $(patsubst %.exe,$(EXEDIR)/%.exe,$(_EXES2))
 
 all: $(EXES1) $(EXES2)
 
-# dep: functions.hpp variables.hpp config.hpp calibRecord.hpp voigt.hpp
-_OBJS1 = fitzee.o \
-         fitzeescale.o 
-
-# dep: %.hpp
-_OBJS2 = config.o \
-         copyTree.o 
 
 # dep: nothing
 _OBJS3 = calculateEtaScaleFromICs.o \
@@ -55,25 +48,22 @@ _OBJS3 = calculateEtaScaleFromICs.o \
          draw_calibTable.o \
          printic.o
 
-# dep: drawMee.hpp config.hpp calibRecord.hpp etaring.hpp
-_OBJS4 = drawMee.o
-
-OBJS1 = $(patsubst %,$(SRCDIR)/%,$(_OBJS1))
-OBJS2 = $(patsubst %,$(SRCDIR)/%,$(_OBJS2))
 OBJS3 = $(patsubst %,$(SRCDIR)/%,$(_OBJS3))
-OBJS4 = $(patsubst %,$(SRCDIR)/%,$(_OBJS4))
 
-$(OBJS1): $(SRCDIR)/%.o: $(SRCDIR)/%.cpp \
+$(SRCDIR)/fitzee.o $(SRCDIR)/fitzeescale.o: $(SRCDIR)/%.o: $(SRCDIR)/%.cpp \
           functions.hpp variables.hpp config.hpp calibRecord.hpp voigt.hpp
 	$(CC) -o $@ -c $< $(CFLAGS)
 
-$(OBJS2):  $(SRCDIR)/%.o: $(SRCDIR)/%.cpp $(INCDIR)/%.hpp
+$(SRCDIR)/config.o: $(SRCDIR)/%.o: $(SRCDIR)/%.cpp $(INCDIR)/%.hpp
+	$(CC) -o $@ -c $< $(CFLAGS)
+
+$(SRCDIR)/copyTree.o: $(SRCDIR)/%.o: $(SRCDIR)/%.cpp $(INCDIR)/%.hpp calibTreeDef.hpp
 	$(CC) -o $@ -c $< $(CFLAGS)
 
 $(OBJS3):  $(SRCDIR)/%.o: $(SRCDIR)/%.cpp 
 	$(CC) -o $@ -c $< $(CFLAGS)
 
-$(OBJS4):  $(SRCDIR)/%.o: $(SRCDIR)/%.cpp $(INCDIR)/%.hpp config.hpp calibRecord.hpp etaring.hpp
+$(SRCDIR)/drawMee.o: $(SRCDIR)/%.o: $(SRCDIR)/%.cpp $(INCDIR)/%.hpp config.hpp calibRecord.hpp etaring.hpp calibTreeDef.hpp
 	$(CC) -o $@ -c $< $(CFLAGS)
 
 
