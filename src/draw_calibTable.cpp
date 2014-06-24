@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
  
  char name[1000];
 
- sprintf(name, ".x root_style.C");
+ sprintf(name, ".x interface/root_style.C");
  gROOT->ProcessLine(name);
 
  TH1D* h1d = new TH1D("h1d", "h1d", 100,0.5,1.5);

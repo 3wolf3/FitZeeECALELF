@@ -3,6 +3,8 @@
 #include "TFile.h"
 #include "drawMee.hpp"
 #include "config.hpp"
+#include "TCanvas.h"
+#include "TLegend.h"
 
 int main(int argc, char* argv[])
 {
@@ -19,6 +21,9 @@ int main(int argc, char* argv[])
   std::string inrootfilename = steer.getString("inrootfilename");
   std::string calibtablename = steer.getString("calibtablename");
   std::string outrootfilename = steer.getString("outrootfilename");
+
+  std::string foutnameps = outrootfilename.substr(0, outrootfilename.find_last_of(".root")-4) + ".ps";
+  std::string foutnamepdf = outrootfilename.substr(0, outrootfilename.find_last_of(".root")-4) + ".pdf";
  
   int maxevt = steer.getInt("maxevt");
   int nbins = steer.getInt("nbins"); 
@@ -36,6 +41,8 @@ int main(int argc, char* argv[])
   std::cout << "Input file: " << inrootfilename << std::endl;
   std::cout << "Calib Table file: " << calibtablename << std::endl;
   std::cout << "ouput file: " << outrootfilename << std::endl;
+  std::cout << " foutnameps = " << foutnameps << std::endl;
+  std::cout << " foutnamepdf = " << foutnamepdf << std::endl;
   std::cout << "max events: " << maxevt << std::endl;
   std::cout << "nbins in the hist: " << nbins << std::endl;
   std::cout << "method: " << method << std::endl;
@@ -79,35 +86,77 @@ int main(int argc, char* argv[])
 
   // Get Mee Hist using SC energy
   TH1D* h1 = (TH1D*)getTH1DMeeSCEnergy(tree, "hMeeSC", nbins, maxevt, scale, oddeven);
-  h1->SetMarkerColor(9);
-  h1->SetLineColor(9);
+  h1->SetMarkerColor(2);
+  h1->SetLineColor(2);
 
   // Get Mee Hist using Original Energy regression
-  TH1D* h3 = (TH1D*)getTH1DMeeRegEnergy(tree, "hMeeReg", nbins, maxevt, scale, oddeven, regVersion);
-  h3->SetMarkerColor(6);
-  h3->SetLineColor(6);
+  TH1D* h2 = (TH1D*)getTH1DMeeRegEnergy(tree, "hMeeReg", nbins, maxevt, scale, oddeven, regVersion);
+  h2->SetMarkerColor(6);
+  h2->SetLineColor(6);
 
   // Get Mee Hist using Energy Reg. + EtaScale
-  TH1D* h4 = (TH1D*)getTH1DMeeRegEnergyEtaRingEtaScale(tree, 
+  TH1D* h3 = (TH1D*)getTH1DMeeRegEnergyEtaRingEtaScale(tree, 
                  EtaRingEtaScaleRefA, EtaRingEtaScaleRefB, EtaRingEtaScaleRefC, EtaRingEtaScaleRefD,
                  "hMeeRegEtaScale", nbins, maxevt, scale, oddeven, regVersion);
-  h4->SetMarkerColor(8);
-  h4->SetLineColor(8);
+  h3->SetMarkerColor(8);
+  h3->SetLineColor(8);
 
   // Get Mee Hist with Energy Reg. + EtaScale + Re-Calib
-  TH1D* h5 = (TH1D*)getTH1DMeeRegEnergyEtaRingEtaScaleNewICs(tree, extree, calibTable, 
+  TH1D* h4 = (TH1D*)getTH1DMeeRegEnergyEtaRingEtaScaleNewICs(tree, extree, calibTable, 
                  EtaRingEtaScaleRefA, EtaRingEtaScaleRefB, EtaRingEtaScaleRefC, EtaRingEtaScaleRefD, 
                  "hMeeRegEtaScaleNewICs", nbins, maxevt, method, scale, oddeven, regVersion);
-  h5->SetMarkerColor(4);
-  h5->SetLineColor(4);
+  h4->SetMarkerColor(4);
+  h4->SetLineColor(4);
 
-  
+  char name[1000];
+
+  sprintf(name, ".x interface/root_style.C");
+  gROOT->ProcessLine(name); 
+
+  TCanvas* plots = new TCanvas("plots", "plots");
+  sprintf(name, "%s[", foutnameps.c_str());
+  plots->Print(name);
+
+  TLegend* lg = new TLegend(0.6, 0.7, 0.9, 0.9);
+
+  plots->Clear();
+  lg->AddEntry(h1, "SC", "pl");
+  lg->AddEntry(h4, "Reg+EtaScale+Calib", "pl");
+
+
+  h4->Draw();
+  h1->Draw("same");
+  lg->Draw("same");
+  plots->Print(foutnameps.c_str());
+
+  plots->Clear();
+  lg->Clear();
+  lg->AddEntry(h1, "SC", "pl");
+  lg->AddEntry(h2, "Reg", "pl");
+  lg->AddEntry(h3, "Reg+EtaScale", "pl");
+  lg->AddEntry(h4, "Reg+EtaScale+Calib", "pl");
+
+
+  h4->Draw();
+  h3->Draw("same");
+  h2->Draw("same");
+  h1->Draw("same");
+  lg->Draw("same");
+  plots->Print(foutnameps.c_str());
+
+   sprintf(name, "%s]", foutnameps.c_str());
+   plots->Print(name);
+
+   sprintf(name, ".! ps2pdf %s %s", foutnameps.c_str(), foutnamepdf.c_str());
+   gROOT->ProcessLine(name);
+
+ 
   // write the hist to out root file
   fout->cd();
   h1->Write();
+  h2->Write();
   h3->Write();
   h4->Write();
-  h5->Write();
 
   // delete the chain no more need it
   tree->Delete();
