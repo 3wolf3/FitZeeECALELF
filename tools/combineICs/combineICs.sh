@@ -5,7 +5,7 @@ for period in  2012AB 2012C 2012D;
 do
   newICfile="ZeeHighEta/calibTable_out_HighEta_withEtaScale_MODE782_WithNewIC_Data_${period}_stdICs.dat" ;
   #newEtaScalefile="ZeeHighEta/fitzeescale_out_MODE782_WithNewIC_DataOvMC_${period}_stdICs.dat"
-  newEtaScalefile="ZeeHighEta/fitzeescale_out_MODE782_WithNewIC_MC_${period}_stdIC.dat"
+  newEtaScalefile="ZeeHighEta/fitzeescale_out_MODE782_WithNewIC_MC_${period}_Inv_stdIC.dat"
 
   Runs="";
   if [ ${period} == 2012AB ]; then 
