@@ -1,0 +1,35 @@
+Available iovs for tag:  EcalIntercalibConstants_2012ABCD_offline
+
+RunA
+Since  1       Till  191690
+Since  191691  Till  191859
+Since  191860  Till  193621
+Since  193622  Till  193833
+
+RunB
+Since  193834  Till  194222
+Since  194223  Till  194690
+Since  194691  Till  195395
+Since  195396  Till  195399
+Since  195400  Till  195962
+Since  195963  Till  196531
+
+RunC
+Since  196532  Till  198201
+Since  198202  Till  199010
+Since  199011  Till  199021
+Since  199022  Till  199803
+Since  199804  Till  200472
+Since  200473  Till  200600
+Since  200601  Till  201277
+Since  201278  Till  201824
+Since  201825  Till  202083
+Since  202084  Till  202529
+Since  202530  Till  203767
+
+RunD
+Since  203768  Till  205805
+Since  205806  Till  206065
+Since  206066  Till  207098
+Since  207099  Till  208295
+Since  208296  Till  4294967295
