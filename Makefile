@@ -5,13 +5,13 @@ INCDIR = ./interface
 EXEDIR = ./bin
 SRCDIR = ./src
 
-ROOTLIBS = -L$(ROOTSYS)/lib \
-           -lCore -lCint -lRIO -lNet -lHist -lGraf -lGraf3d \
-           -lGpad -lTree -lRint -lPostscript -lMatrix -lPhysics \
-           -lMathCore -lThread -lMinuit -lMinuit2 -lpthread -lTreePlayer \
-           -Wl,-rpath,$(ROOTSYS)/lib -stdlib=libc++ -lm -ldl 
+	ROOTLIBS = -L$(ROOTSYS)/lib -lMinuit2\
+           -lCore -lRIO -lNet -lHist -lGraf -lGraf3d -lGpad \
+           -lTree -lRint -lPostscript -lMatrix -lPhysics -lMathCore \
+           -lThread -pthread -lm -ldl -rdynamic
 
-ROOTCFLAGS = -m64 -I$(ROOTSYS)/include
+
+ROOTCFLAGS = -pthread -std=c++11 -Wno-deprecated-declarations -m64 -I$(ROOTSYS)/include
 
 CFLAGS = $(ROOTCFLAGS) -I$(INCDIR)
 LIBS = $(ROOTLIBS)
