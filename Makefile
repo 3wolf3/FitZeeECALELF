@@ -26,8 +26,8 @@ vpath %.o   $(SRCDIR)
 vpath %.exe $(EXEDIR)
 
 # this group of exes use config.o
-_EXES1 = fitzeescale.exe fitzee.exe \
-        drawMee.exe
+#_EXES1 = fitzeescale.exe fitzee.exe drawMee.exe
+_EXES1 = fitzeescale.exe fitzee.exe
 
 # this group of exes do not use config.o
 _EXES2 = copyTree.exe \
