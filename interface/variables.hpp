@@ -99,7 +99,7 @@ std::vector<double> allERegScale1, allERegScale2;
 int nEvents, nSignals;
 std::vector<double*> E1, EReg1, Eta1, Phi1;
 //std::vector<double*> E1, Eta1, Phi1;
-std::vector<double*> E2, EReg2, Eta1, Phi1;
+std::vector<double*> E2, EReg2, Eta2, Phi2;
 //std::vector<double*> E2, Eta2, Phi2;
 std::vector<int*> nHits1, nHits2;
 std::vector< std::vector<double>* > HitE1, HitE2;
@@ -112,7 +112,7 @@ std::vector<int*> SeedIX2, SeedIY2, SeedIZ2;
 std::vector<double*> RawEEcal1, RawEEcal2;
 std::vector<double*> RawSCE1, RawSCE2;
 std::vector<double*> RawESE1, RawESE2;
-//std::vector<double*> ERegScale1, ERegScale2;
+std::vector<double*> ERegScale1, ERegScale2;
 
 //Declaration of leaves types
    Int_t           runNumber;
