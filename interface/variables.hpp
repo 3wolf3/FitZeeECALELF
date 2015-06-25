@@ -80,7 +80,7 @@ std::vector<Int_t> allRunNum;
 std::vector<ULong64_t> allEvtNum; 
 std::vector<double> allE1, allEReg1, allEta1, allPhi1;
 //std::vector<double> allE1, allEta1, allPhi1;
-std::vector<double> allE2, allEReg2, allEta1, allPhi1;
+std::vector<double> allE2, allEReg2, allEta2, allPhi2;
 //std::vector<double> allE2, allEta2, allPhi2;
 std::vector<double> allSCEta1, allSCEta2;
 std::vector<int> allnHits1, allnHits2;
