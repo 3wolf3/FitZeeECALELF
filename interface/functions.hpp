@@ -1518,6 +1518,27 @@ public:
         E2 = EReg2;
 
       }
+      else if (method==9)
+      {
+        //=================================================================== 
+        //Method 9 is based off method 7 and sets E1 and E2 to their own values with no calculations.
+
+        // regression energy
+        double EReg1 = *(_EReg1.at(i));
+        double EReg2 = *(_EReg2.at(i));
+
+        // apply energy scale
+        if(_ScaleBin1.at(i)>=0) EReg1 *= par.at(_ScaleBin1.at(i));
+        if(_ScaleBin2.at(i)>=0) EReg2 *= par.at(_ScaleBin2.at(i));
+
+        //std::cout << "method 7: _ScaleBin1.at(i) = " << _ScaleBin1.at(i) 
+        //             << "; _ScaleBin2.at(i) = " << _ScaleBin2.at(i) << std::endl;
+        // energy after energy scale
+        E1 = EReg1;
+        E2 = EReg2;
+        //===========================================================================
+
+      }
       else if (method==7820)
       {
         // method 7820 is similar to method 7 , but use New Raw SC energy that recalculated from the New ICs and hits energy
