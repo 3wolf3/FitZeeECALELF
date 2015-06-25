@@ -78,8 +78,10 @@ int GetEtaRing(int ix, int iy, int iz)
 int nEventsAll, nSignalsAll;
 std::vector<Int_t> allRunNum;
 std::vector<ULong64_t> allEvtNum; 
-std::vector<double> allE1, allEReg1, allEta1, allPhi1;
-std::vector<double> allE2, allEReg2, allEta2, allPhi2;
+//std::vector<double> allE1, allEReg1, allEta1, allPhi1;
+std::vector<double> allE1, allEta1, allPhi1;
+//std::vector<double> allE1, allEReg2, allEta1, allPhi1;
+std::vector<double> allE2, allEta2, allPhi2;
 std::vector<double> allSCEta1, allSCEta2;
 std::vector<int> allnHits1, allnHits2;
 std::vector< std::vector<double> > allHitE1, allHitE2;
@@ -91,12 +93,14 @@ std::vector<double> allRawEEcal1, allRawEEcal2;
 std::vector<int> allScaleBin1, allScaleBin2;
 std::vector<double> allRawSCE1, allRawSCE2;
 std::vector<double> allRawESE1, allRawESE2;
-std::vector<double> allERegScale1, allERegScale2;
+//std::vector<double> allERegScale1, allERegScale2;
 
 // store selected events
 int nEvents, nSignals;
-std::vector<double*> E1, EReg1, Eta1, Phi1;
-std::vector<double*> E2, EReg2, Eta2, Phi2;
+//std::vector<double*> E1, EReg1, Eta1, Phi1;
+std::vector<double*> E1, Eta1, Phi1;
+//std::vector<double*> E2, EReg2, Eta1, Phi1;
+std::vector<double*> E2, Eta2, Phi2;
 std::vector<int*> nHits1, nHits2;
 std::vector< std::vector<double>* > HitE1, HitE2;
 std::vector< std::vector<int>* > HitIX1, HitIY1, HitIZ1;
@@ -108,7 +112,7 @@ std::vector<int*> SeedIX2, SeedIY2, SeedIZ2;
 std::vector<double*> RawEEcal1, RawEEcal2;
 std::vector<double*> RawSCE1, RawSCE2;
 std::vector<double*> RawESE1, RawESE2;
-std::vector<double*> ERegScale1, ERegScale2;
+//std::vector<double*> ERegScale1, ERegScale2;
 
 //Declaration of leaves types
    Int_t           runNumber;
@@ -142,7 +146,7 @@ std::vector<double*> ERegScale1, ERegScale2;
    Float_t         rawEnergySCEle[2];
    Float_t         esEnergySCEle[2];
    Float_t         energySCEle_corr[2];
-   Float_t         energySCEle_regrCorr_ele[2];
+   /*Float_t         energySCEle_regrCorr_ele[2];
    Float_t         energySCEle_regrCorr_pho[2];
    Float_t         energyEle_regrCorr_fra[2];
    Float_t         energySigmaEle_regrCorr_fra[2];
@@ -181,7 +185,7 @@ std::vector<double*> ERegScale1, ERegScale2;
    Float_t         energySCEle_regrCorrSemiPar7TeVtrainV8_ele[2];
    Float_t         energySCEle_regrCorrSemiPar7TeVtrainV8_pho[2];
    Float_t         energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_ele[2];
-   Float_t         energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_pho[2];
+   Float_t         energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_pho[2];*/
    Float_t         R9Ele[2];
    Float_t         e5x5SCEle[2];
    Float_t         pModeGsfEle[2];
@@ -192,7 +196,7 @@ std::vector<double*> ERegScale1, ERegScale2;
    Float_t         invMass_rawSC;
    Float_t         invMass_rawSC_esSC;
    Float_t         invMass_SC_corr;
-   Float_t         invMass_SC_regrCorr_ele;
+   /*Float_t         invMass_SC_regrCorr_ele;
    Float_t         invMass_SC_regrCorr_pho;
    Float_t         invMass_regrCorr_fra;
    Float_t         invMass_regrCorr_egamma;
@@ -211,7 +215,7 @@ std::vector<double*> ERegScale1, ERegScale2;
    Float_t         invMass_SC_regrCorrSemiPar7TeVtrainV7_pho;
    Float_t         invMass_SC_regrCorrSemiPar7TeVtrainV7_ele;
    Float_t         invMass_SC_regrCorrSemiPar7TeVtrainV8_pho;
-   Float_t         invMass_SC_regrCorrSemiPar7TeVtrainV8_ele;
+   Float_t         invMass_SC_regrCorrSemiPar7TeVtrainV8_ele;*/
    Float_t         invMass_MC;
    Float_t         etaMCEle[2];
    Float_t         phiMCEle[2];
@@ -272,7 +276,7 @@ void SetTreeBranch(TChain* tree)
    tree->SetBranchAddress("rawEnergySCEle",rawEnergySCEle);
    tree->SetBranchAddress("esEnergySCEle",esEnergySCEle);
    tree->SetBranchAddress("energySCEle_corr",energySCEle_corr);
-   tree->SetBranchAddress("energySCEle_regrCorr_ele",energySCEle_regrCorr_ele);
+   /*tree->SetBranchAddress("energySCEle_regrCorr_ele",energySCEle_regrCorr_ele);
    tree->SetBranchAddress("energySCEle_regrCorr_pho",energySCEle_regrCorr_pho);
    tree->SetBranchAddress("energyEle_regrCorr_fra",energyEle_regrCorr_fra);
    tree->SetBranchAddress("energySigmaEle_regrCorr_fra",energySigmaEle_regrCorr_fra);
@@ -311,7 +315,7 @@ void SetTreeBranch(TChain* tree)
    tree->SetBranchAddress("energySCEle_regrCorrSemiPar7TeVtrainV8_ele",energySCEle_regrCorrSemiPar7TeVtrainV8_ele);
    tree->SetBranchAddress("energySCEle_regrCorrSemiPar7TeVtrainV8_pho",energySCEle_regrCorrSemiPar7TeVtrainV8_pho);
    tree->SetBranchAddress("energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_ele",energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_ele);
-   tree->SetBranchAddress("energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_pho",energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_pho);
+   tree->SetBranchAddress("energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_pho",energySigmaSCEle_regrCorrSemiPar7TeVtrainV8_pho);*/
    tree->SetBranchAddress("R9Ele",R9Ele);
    tree->SetBranchAddress("e5x5SCEle",e5x5SCEle);
    tree->SetBranchAddress("pModeGsfEle",pModeGsfEle);
@@ -322,7 +326,7 @@ void SetTreeBranch(TChain* tree)
    tree->SetBranchAddress("invMass_rawSC",&invMass_rawSC);
    tree->SetBranchAddress("invMass_rawSC_esSC",&invMass_rawSC_esSC);
    tree->SetBranchAddress("invMass_SC_corr",&invMass_SC_corr);
-   tree->SetBranchAddress("invMass_SC_regrCorr_ele",&invMass_SC_regrCorr_ele);
+   /*tree->SetBranchAddress("invMass_SC_regrCorr_ele",&invMass_SC_regrCorr_ele);
    tree->SetBranchAddress("invMass_SC_regrCorr_pho",&invMass_SC_regrCorr_pho);
    tree->SetBranchAddress("invMass_regrCorr_fra",&invMass_regrCorr_fra);
    tree->SetBranchAddress("invMass_regrCorr_egamma",&invMass_regrCorr_egamma);
@@ -341,7 +345,7 @@ void SetTreeBranch(TChain* tree)
    tree->SetBranchAddress("invMass_SC_regrCorrSemiPar7TeVtrainV7_pho",&invMass_SC_regrCorrSemiPar7TeVtrainV7_pho);
    tree->SetBranchAddress("invMass_SC_regrCorrSemiPar7TeVtrainV7_ele",&invMass_SC_regrCorrSemiPar7TeVtrainV7_ele);
    tree->SetBranchAddress("invMass_SC_regrCorrSemiPar7TeVtrainV8_pho",&invMass_SC_regrCorrSemiPar7TeVtrainV8_pho);
-   tree->SetBranchAddress("invMass_SC_regrCorrSemiPar7TeVtrainV8_ele",&invMass_SC_regrCorrSemiPar7TeVtrainV8_ele);
+   tree->SetBranchAddress("invMass_SC_regrCorrSemiPar7TeVtrainV8_ele",&invMass_SC_regrCorrSemiPar7TeVtrainV8_ele);*/
    tree->SetBranchAddress("invMass_MC",&invMass_MC);
    tree->SetBranchAddress("etaMCEle",etaMCEle);
    tree->SetBranchAddress("phiMCEle",phiMCEle);
