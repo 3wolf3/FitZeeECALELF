@@ -78,10 +78,10 @@ int GetEtaRing(int ix, int iy, int iz)
 int nEventsAll, nSignalsAll;
 std::vector<Int_t> allRunNum;
 std::vector<ULong64_t> allEvtNum; 
-//std::vector<double> allE1, allEReg1, allEta1, allPhi1;
-std::vector<double> allE1, allEta1, allPhi1;
-//std::vector<double> allE1, allEReg2, allEta1, allPhi1;
-std::vector<double> allE2, allEta2, allPhi2;
+std::vector<double> allE1, allEReg1, allEta1, allPhi1;
+//std::vector<double> allE1, allEta1, allPhi1;
+std::vector<double> allE2, allEReg2, allEta1, allPhi1;
+//std::vector<double> allE2, allEta2, allPhi2;
 std::vector<double> allSCEta1, allSCEta2;
 std::vector<int> allnHits1, allnHits2;
 std::vector< std::vector<double> > allHitE1, allHitE2;
@@ -93,14 +93,14 @@ std::vector<double> allRawEEcal1, allRawEEcal2;
 std::vector<int> allScaleBin1, allScaleBin2;
 std::vector<double> allRawSCE1, allRawSCE2;
 std::vector<double> allRawESE1, allRawESE2;
-//std::vector<double> allERegScale1, allERegScale2;
+std::vector<double> allERegScale1, allERegScale2;
 
 // store selected events
 int nEvents, nSignals;
-//std::vector<double*> E1, EReg1, Eta1, Phi1;
-std::vector<double*> E1, Eta1, Phi1;
-//std::vector<double*> E2, EReg2, Eta1, Phi1;
-std::vector<double*> E2, Eta2, Phi2;
+std::vector<double*> E1, EReg1, Eta1, Phi1;
+//std::vector<double*> E1, Eta1, Phi1;
+std::vector<double*> E2, EReg2, Eta1, Phi1;
+//std::vector<double*> E2, Eta2, Phi2;
 std::vector<int*> nHits1, nHits2;
 std::vector< std::vector<double>* > HitE1, HitE2;
 std::vector< std::vector<int>* > HitIX1, HitIY1, HitIZ1;
@@ -419,6 +419,7 @@ void FillAllEvents(TChain* tree, TChain* extree, const int debug=0, const std::s
     if(regVersion=="V5Elec") allEReg1.push_back(energySCEle_regrCorrSemiParV5_ele[0]);
     else if(regVersion=="V6Elec") allEReg1.push_back(energySCEle_regrCorrSemiParV6_ele[0]);
     else if(regVersion=="V7Elec") allEReg1.push_back(energySCEle_regrCorrSemiParV7_ele[0]);
+    else if(regVersion=="VWElec") ;//EVAN
     else allEReg1.push_back(energySCEle_regrCorrSemiParV8_ele[0]);    
 
     allERegScale1.push_back(allEReg1.back()/allE1.back());
