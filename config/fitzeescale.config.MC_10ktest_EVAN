@@ -1,10 +1,10 @@
 // fitting mode
-//int mode 781
-int mode 999
+int mode 781
+//int mode 999
 
 // fitting method
 int method 7
-int method 9
+//int method 9
 
 // input and output files
 string rootfile_in  ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012AB_10k.root
