@@ -3,7 +3,7 @@
 int mode 999
 
 // fitting method
-//int method 7
+int method 7
 int method 9
 
 // input and output files
