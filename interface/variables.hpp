@@ -416,11 +416,12 @@ void FillAllEvents(TChain* tree, TChain* extree, const int debug=0, const std::s
     // first electron
     //allE1.push_back(rawEnergySCEle[0]); // SC raw as in Regression
     allE1.push_back(rawEnergySCEle[0]+esEnergySCEle[0]); // need to know rawEnergySCEle is ECAL only or including ES?
-    if(regVersion=="V5Elec") allEReg1.push_back(energySCEle_regrCorrSemiParV5_ele[0]);
+    /*if(regVersion=="V5Elec") allEReg1.push_back(energySCEle_regrCorrSemiParV5_ele[0]);
     else if(regVersion=="V6Elec") allEReg1.push_back(energySCEle_regrCorrSemiParV6_ele[0]);
     else if(regVersion=="V7Elec") allEReg1.push_back(energySCEle_regrCorrSemiParV7_ele[0]);
     else if(regVersion=="VWElec") allEReg1.push_back(energySCEle_corr[0]);//EVAN
-    else allEReg1.push_back(energySCEle_regrCorrSemiParV8_ele[0]);    
+    else allEReg1.push_back(energySCEle_regrCorrSemiParV8_ele[0]);    */
+    if(regVersion=="VWElec") allEReg1.push_back(energySCEle_corr[0]);//EVAN
 
     allERegScale1.push_back(allEReg1.back()/allE1.back());
     allEta1.push_back(etaEle[0]);
@@ -457,11 +458,12 @@ void FillAllEvents(TChain* tree, TChain* extree, const int debug=0, const std::s
     // second electron
     //allE2.push_back(rawEnergySCEle[1]); // SC raw as in Regression
     allE2.push_back(rawEnergySCEle[1]+esEnergySCEle[1]); // 
-    if(regVersion=="V5Elec") allEReg2.push_back(energySCEle_regrCorrSemiParV5_ele[1]);
+    /*if(regVersion=="V5Elec") allEReg2.push_back(energySCEle_regrCorrSemiParV5_ele[1]);
     else if(regVersion=="V6Elec") allEReg2.push_back(energySCEle_regrCorrSemiParV6_ele[1]);
     else if(regVersion=="V7Elec") allEReg2.push_back(energySCEle_regrCorrSemiParV7_ele[1]);
     else if(regVersion=="VWElec") allEReg2.push_back(energySCEle_corr[1]);//EVAN
-    else allEReg2.push_back(energySCEle_regrCorrSemiParV8_ele[1]);
+    else allEReg2.push_back(energySCEle_regrCorrSemiParV8_ele[1]); */
+    if(regVersion=="VWElec") allEReg2.push_back(energySCEle_corr[1]);//EVAN
 
     allERegScale2.push_back(allEReg2.back()/allE2.back());
     allEta2.push_back(etaEle[1]);
