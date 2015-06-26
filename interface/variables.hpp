@@ -190,6 +190,8 @@ std::vector<double*> ERegScale1, ERegScale2;
    Float_t         e5x5SCEle[2];
    Float_t         pModeGsfEle[2];
    Float_t         pAtVtxGsfEle[2];
+   Float_t         pNormalizedChi2Ele[2];
+   Float_t         trackMomentumErrorEle[2];
    Float_t         invMass;
    Float_t         invMass_SC;
    Float_t         invMass_e5x5;
@@ -217,6 +219,7 @@ std::vector<double*> ERegScale1, ERegScale2;
    Float_t         invMass_SC_regrCorrSemiPar7TeVtrainV8_pho;
    Float_t         invMass_SC_regrCorrSemiPar7TeVtrainV8_ele;*/
    Float_t         invMass_MC;
+   Float_t         invMass_mumu;
    Float_t         etaMCEle[2];
    Float_t         phiMCEle[2];
    Int_t           nHitsSCEle[2];
