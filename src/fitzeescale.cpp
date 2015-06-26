@@ -303,7 +303,7 @@ int main(int argc, char* argv[])
 
     fout->cd();
 
-    TH1D* hist = new TH1D("hEtaScale", "hEtaScale", 50, -2.5, 2.5);
+    TH1D* hist = new TH1D("hEtaScale", "hEtaScale", 60, -3.0,3.0);//50, -2.5, 2.5);
     hist->Sumw2();
     hist->SetMarkerStyle(20);
 
@@ -323,9 +323,9 @@ int main(int argc, char* argv[])
 
     // Eta bins
     std::vector<double> EtaBins;
-    for (int ibin=0; ibin<=50; ibin++)
+    for (int ibin=0; ibin<=496; ibin++)//50 
     {
-      EtaBins.push_back(-2.5 + 0.1*ibin);
+      EtaBins.push_back(-3.0 + 0.012096774193548387*ibin);//(-2.5 + 0.1*ibin);
     }
 
     nEvents = AddEtaBinNumberToElectrons(EtaBins, _combine);
@@ -442,7 +442,7 @@ int main(int argc, char* argv[])
 
     fout->cd();
 
-    TH1D* hist = new TH1D("hEtaScale", "hEtaScale", 50, -2.5, 2.5);
+    TH1D* hist = new TH1D("hEtaScale", "hEtaScale", 60, -3.0, 3.0); //50, -2.5, 2.5);
     hist->Sumw2();
     hist->SetMarkerStyle(20);
 
@@ -463,9 +463,9 @@ int main(int argc, char* argv[])
 
     // Eta bins
     std::vector<double> EtaBins;
-    for (int ibin=0; ibin<=50; ibin++)
+    for (int ibin=0; ibin<=60; ibin++)
     {
-      EtaBins.push_back(-2.5 + 0.1*ibin);
+      EtaBins.push_back(-3.0 + 0.1*ibin);//(-2.5 + 0.1*ibin);
     }
 
     // apply ref eta-scale
