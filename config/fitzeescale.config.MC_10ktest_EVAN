@@ -1,17 +1,21 @@
 // fitting mode
-int mode 781
+int mode 782
 //int mode 999
 
 // fitting method
 int method 7
 //int method 9
 
-// input and output files
-string rootfile_in  ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012AB_10k.root
+//### input and output files###
+//string rootfile_in /afs/cern.ch/user/l/lcorpe/work/public/ECALELF/ntuple_160615.root
+
+string rootfile_in /afs/cern.ch/work/e/ewolfe/public/ECAL_MoCa/CMSSW_7_4_5/src/Inputs_FitZeeECALELF/ntuple_DYJets-Summer12-START53-HighEtaSkim-runDependent-Extra-V4-2012AB_10k.root
+//string rootfile_in /afs/cern.ch/work/e/ewolfe/public/ECAL_MoCa/CMSSW_7_4_5/src/Inputs_FitZeeECALELF/ntuple_160615.root
+
 string rootfile_out  fitzeescale_out_AB_10ktest3.root
 
 
-// signal fraction of the signal + background Mee fits
+//### signal fraction of the signal + background Mee fits###
 double signalFraction 0.9999
 
 // gaussian resolution of the Mee distribution
@@ -31,4 +35,53 @@ int doEvenOdd  0
 string parfile_ref
 
 // input calib ICs applied before deriving the Eta-Scale, only used for mode 782
-string calibtable_filename calibTable_out_MCHighEta_AB_withEtaScale_MC_V8Elec_Mode781_Method7_AB_MC_3.dat
+
+//string calibtable_in /afs/cern.ch/work/e/ewolfe/public/ECAL_MoCa/CMSSW_7_4_5/src/FitZeeECALELF/data/calibTable_in_HighEta_EEN.dat
+//string calibtable_ref /afs/cern.ch/work/e/ewolfe/public/ECAL_MoCa/CMSSW_7_4_5/src/FitZeeECALELF/data/calibTable_in_HighEta_EEN.dat
+//string calibtable_out
+
+
+
+
+
+//string calibtable_filename /afs/cern.ch/work/e/ewolfe/public/ECAL_MoCa/CMSSW_7_4_5/src/FitZeeECALELF/data/calibTable_in_HighEta_EEN.dat
+//string calibtable_filename /afs/cern.ch/work/e/ewolfe/public/ECAL_MoCa/CMSSW_7_4_5/src/FitZeeECALELF/data/calibTable_in_HighEta_EEP.dat
+
+//string calibtable_filename /afs/cern.ch/work/e/ewolfe/public/ECAL_MoCa/CMSSW_7_4_5/src/FitZeeECALELF/data/calibTable_out_HighEta_withEtaScale_MODE782_WithNewIC_Data_2012AB_EEN.dat
+//string calibtable_filename /afs/cern.ch/work/e/ewolfe/public/ECAL_MoCa/CMSSW_7_4_5/src/FitZeeECALELF/data/calibTable_out_HighEta_withEtaScale_MODE782_WithNewIC_Data_2012AB_EEP.dat
+
+//string calibtable_filename /afs/cern.ch/work/e/ewolfe/public/ECAL_MoCa/CMSSW_7_4_5/src/FitZeeECALELF/data/calibTable_out_HighEta_withEtaScale_MODE782_WithNewIC_Data_2012C_EEN.dat
+//string calibtable_filename /afs/cern.ch/work/e/ewolfe/public/ECAL_MoCa/CMSSW_7_4_5/src/FitZeeECALELF/data/calibTable_out_HighEta_withEtaScale_MODE782_WithNewIC_Data_2012C_EEP.dat
+
+//string calibtable_filename /afs/cern.ch/work/e/ewolfe/public/ECAL_MoCa/CMSSW_7_4_5/src/FitZeeECALELF/data/calibTable_out_HighEta_withEtaScale_MODE782_WithNewIC_Data_2012D_EEN.dat
+//string calibtable_filename /afs/cern.ch/work/e/ewolfe/public/ECAL_MoCa/CMSSW_7_4_5/src/FitZeeECALELF/data/calibTable_out_HighEta_withEtaScale_MODE782_WithNewIC_Data_2012D_EEP.dat
+
+
+
+//????????????????????????????????//WHERE IS THIS FILE LOCATED????????????????????????????????????????????
+//string calibtable_filename calibTable_out_MCHighEta_AB_withEtaScale_MC_V8Elec_Mode781_Method7_AB_MC_3.dat
+
+
+string calibtable_filename /afs/cern.ch/work/e/ewolfe/public/ECAL_MoCa/CMSSW_7_4_5/src/FitZeeECALELF/data/fitzeescale_out_MODE782_WithNewIC_DataOvMC_2012AB.dat
+
+
+
+// ###SETTING ETA SCALE REFERENCE###
+string etascale_ref /afs/cern.ch/work/e/ewolfe/public/ECAL_MoCa/CMSSW_7_4_5/src/FitZeeECALELF/data/fitzeescale_out_MODE782_WithNewIC_DataOvMC_2012AB.dat
+
+//string etascale_ref /afs/cern.ch/work/e/ewolfe/public/ECAL_MoCa/CMSSW_7_4_5/src/FitZeeECALELF/data/fitzeescale_out_MODE782_WithNewIC_DataOvMC_2012AB.dat;/afs/cern.ch/work/e/ewolfe/public/ECAL_MoCa/CMSSW_7_4_5/src/FitZeeECALELF/data/fitzeescale_out_MODE782_WithNewIC_DataOvMC_2012AB.dat;/afs/cern.ch/work/e/ewolfe/public/ECAL_MoCa/CMSSW_7_4_5/src/FitZeeECALELF/data/fitzeescale_out_MODE782_WithNewIC_DataOvMC_2012AB.dat;/afs/cern.ch/work/e/ewolfe/public/ECAL_MoCa/CMSSW_7_4_5/src/FitZeeECALELF/data/fitzeescale_out_MODE782_WithNewIC_DataOvMC_2012AB.dat
+
+//string etascale_ref fitzeescale_out_V8Elec_Mode781_Method7_ABC_Data_3_NoHighEtaEEP.dat;fitzeescale_out_V8Elec_Mode781_Method7_ABC_Data_3_NoHighEtaEEP.dat;fitzeescale_out_V8Elec_Mode781_Method7_ABC_Data_3_NoHighEtaEEP.dat;fitzeescale_out_V8Elec_Mode781_Method7_ABC_Data_3_NoHighEtaEEP.dat
+
+
+
+
+
+
+
+
+
+
+
+
+
