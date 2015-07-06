@@ -16,8 +16,8 @@ scram project $release
 cd $release/src
 cmsenv
 
-git clone https://github.com/VirginiaCMS/FitZeeECALELF.git
-
+#git clone https://github.com/VirginiaCMS/FitZeeECALELF.git
+git clone https://github.com/3wolf3/FitZeeECALELF
 cd FitZeeECALELF
 gmake all
 
